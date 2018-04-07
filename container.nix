@@ -1,0 +1,6 @@
+{
+  defaults =
+  {
+    deployment.targetEnv = "container";
+  };
+}

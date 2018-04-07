@@ -80,6 +80,28 @@ function fac() {
           ;;
       esac
       ;;
+    service)
+      case "$2" in
+        start)
+          fac_service start
+          ;;
+        stop)
+          fac_service stop
+          ;;
+        restart)
+          fac_service restart
+          ;;
+        log)
+          ssh factorio.udsgaming.net sudo journalctl -ef -u factorio
+          ;;
+        status)
+          fac_service status
+          ;;
+        *)
+          echo "Wat"
+          ;;
+      esac
+      ;;
     *)
       echo "Wat"
       ;;

@@ -34,6 +34,28 @@ function fac_server() {
   gcloud compute instances "${1:-start}" factorio
 }
 
+function usage() {
+  cat <<-EOF
+		USAGE
+		fac [module] [action]
+
+		SYNOPSIS
+		This shell function helps you manage your factorio server by wrapping common actions.
+
+		MODULES
+		  mods: act on the mod folder
+		  save: act on the active save file
+		  service: act on the systemd service
+		  server: act on the GCE instance (requires a configured gcloud)
+
+		ACTIONS
+		  mods: upload, download. Upload will restart the service when done.
+		  save: upload <path to local save file>. Stop service first, start again when done.
+		  service: start, stop, restart, log, status.
+		  server: start, stop, restart.
+		EOF
+}
+
 function fac() {
   [[ ! -z "$DEBUG" ]] && set -x
   case "$1" in
@@ -103,7 +125,7 @@ function fac() {
       esac
       ;;
     *)
-      echo "Wat"
+      usage
       ;;
   esac
   [[ ! -z "$DEBUG" ]] && set +x

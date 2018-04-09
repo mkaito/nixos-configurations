@@ -2,7 +2,7 @@
 nixops.overrideAttrs (super: {
   src = builtins.fetchGit {
     url = "https://github.com/NixOS/nixops";
-    rev = "b267e2ba592d97d55296e8183689652dc4637416";
+    rev = "da336200c15d2aa145b0ddf29d5d5db5702d4f4f";
   };
   pythonPath = super.pythonPath ++ [ libvirt ];
   patches = [ ./eval-custom-nixpkgs.diff ];

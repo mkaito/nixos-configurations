@@ -1,9 +1,13 @@
 targethost := root@adalind.mkaito.net
 GIST_HASH := 2f8681cbc3069ffdb3d33bedcfbdf2f7
 
-adalind: adalind.nix $(wildcard modules/**/*.nix) $(wildcard pkgs/**/*.nix)
-	NIXOS_CONFIG=$(PWD)/adalind.nix nixos-rebuild --target-host $(targethost) dry-activate
+all: gist adalind
+
+adalind:
+	$(MAKE) -C adalind
 
 gist: factorio_helpers.sh
 	gist -p -u $(GIST_HASH) factorio_helpers.sh
 	touch gist
+
+.PHONY: adalind

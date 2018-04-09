@@ -32,10 +32,6 @@ function fac_service() {
   ssh $remotehost sudo systemctl "${1:-start}" factorio
 }
 
-function fac_server() {
-  gcloud compute instances "${1:-start}" factorio
-}
-
 function usage() {
   cat <<-EOF
 		USAGE
@@ -48,13 +44,11 @@ function usage() {
 		  mods: act on the mod folder
 		  save: act on the active save file
 		  service: act on the systemd service
-		  server: act on the GCE instance (requires a configured gcloud)
 
 		ACTIONS
 		  mods: upload, download. Upload will restart the service when done.
 		  save: upload <path to local save file>. Stop service first, start again when done.
 		  service: start, stop, restart, log, status.
-		  server: start, stop, restart.
 		EOF
 }
 
@@ -81,23 +75,6 @@ function fac() {
           ;;
         download)
           echo "Log into the game and save it from there, lazy bum."
-          ;;
-        *)
-          echo "Wat"
-          ;;
-      esac
-      ;;
-    server)
-      case "$2" in
-        start)
-          fac_server start
-          ;;
-        stop)
-          fac_server stop
-          ;;
-        restart)
-          fac_server stop
-          fac_server start
           ;;
         *)
           echo "Wat"

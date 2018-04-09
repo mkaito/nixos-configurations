@@ -1,7 +1,7 @@
 { lib, pkgs, config, ... }:
 let
   expandUser = name: keys: {
-    extraGroups = [ "wheel" "factorio" ];
+    extraGroups = [ "wheel" ];
     isNormalUser = true;
     openssh.authorizedKeys.keys = keys;
   };
@@ -76,6 +76,7 @@ in
     passwordAuthentication = false;
   };
 
+  users.mutableUsers = false;
   users.users = lib.mapAttrs expandUser (import ../keys/ssh.nix);
 
   nixpkgs.config.allowUnfree = true;

@@ -3,7 +3,7 @@
   network.enableRollback = true;
   defaults = import ./modules;
 
-  factorio =
+  adalind =
   { lib, config, pkgs, ... }:
   let
     ## Run rsync daemon with this module config
@@ -30,14 +30,14 @@
     #  * We force execution of the rsync daemon with the config above
     #  * We prevent any options that might result in unwanted access
     #  * Needs to be one line, sorry.
-    rsyncCmd = ''command="rsync --config=${factorioRsyncdConf} --server --daemon .",no-agent-forwarding,no-port-forwarding,no-user-rc,no-X11-forwarding,no-pty'';
+    factorioRsyncCmd = ''command="rsync --config=${factorioRsyncdConf} --server --daemon .",no-agent-forwarding,no-port-forwarding,no-user-rc,no-X11-forwarding,no-pty'';
   in
   {
     ## Configure the factorio server
     services.factorio = {
       enable = true;
       manualMods = true;
-      whitelist = [ "mkaito" ];
+      whitelist = [ "mkaito" "faore" ];
     };
 
     ## Set things up to rsync mods/saves
@@ -48,7 +48,7 @@
 
       # Fancy Lispy code: concat the forced command with the set of known SSH keys
       openssh.authorizedKeys.keys =
-        map (x: rsyncCmd + " " + x)
+        map (x: factorioRsyncCmd + " " + x)
           (builtins.concatLists
             (builtins.attrValues (import ./keys/ssh.nix)));
     };

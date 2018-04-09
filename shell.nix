@@ -16,6 +16,6 @@ stdenv.mkDerivation {
   NIX_PATH = builtins.concatStringsSep ":" [
     "nixpkgs=${toString pkgs.path}"
     "nixpkgs-overlays=${overlays}"
-    "serokell-ops=${src}"
+    "mkaito=${src}"
   ];
 }

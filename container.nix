@@ -1,6 +1,5 @@
 {
-  defaults =
-  {
+  adalind = {
     deployment.targetEnv = "container";
   };
 }

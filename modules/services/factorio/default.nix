@@ -294,5 +294,9 @@ in
 
     networking.firewall.allowedUDPPorts = [ cfg.port ];
     networking.firewall.allowedTCPPorts = mkIf cfg.rsync [ 873 ];
+
+    system.activationScripts.factorio = ''
+      mkdir -p ${stateDir}/{mods,saves}
+    '';
   };
 }

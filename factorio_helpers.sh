@@ -1,25 +1,27 @@
+remotehost="factorio.udsgaming.net"
+
 function fac_upload_mods() {
   echo "Uploading mod folder..."
-  rsync -rL --delete -e ssh ~/.factorio/mods/ factorio@factorio.udsgaming.net::mods
+  rsync -rL --delete -e ssh ~/.factorio/mods/ factorio@$remotehost::mods
   echo "Restarting service..."
-  facservice restart
+  fac_service restart
   echo "Done. Please allow a few seconds for the service to boot."
 }
 
 function fac_download_mods() {
   echo "Downloading mods from server..."
-  rsync -rL --delete -e ssh factorio@factorio.udsgaming.net::mods ~/.factorio/mods/
+  rsync -rL --delete -e ssh factorio@$remotehost::mods ~/.factorio/mods/
   echo "Done."
 }
 
 function fac_upload_save() {
   if [[ -e $1 ]]; then
     echo "Stopping service first..."
-    facservice stop
+    fac_service stop
     echo "Uploading save..."
-    rsync -z -e ssh "$1" factorio@factorio.udsgaming.net::saves/default.zip
+    rsync -z -e ssh "$1" factorio@$remotehost::saves/default.zip
     echo "Starting service..."
-    facservice start
+    fac_service start
     echo "Done. Please allow a few seconds for the service to boot."
   else
     echo "Am I supposed to guess which save you want to upload?"
@@ -27,7 +29,7 @@ function fac_upload_save() {
 }
 
 function fac_service() {
-  ssh factorio.udsgaming.net sudo systemctl "${1:-start}" factorio
+  ssh $remotehost sudo systemctl "${1:-start}" factorio
 }
 
 function fac_server() {

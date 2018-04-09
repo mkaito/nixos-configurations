@@ -38,12 +38,26 @@ in
 
   nix.autoOptimiseStore = true; # autodeduplicate files in store
 
-  nixpkgs.overlays = [(import ../pkgs)];
+  nixpkgs.overlays = [(import <mkaito/pkgs>)];
 
   programs.zsh.enable = true;
   programs.mosh.enable = true;
 
-  security.sudo.wheelNeedsPassword = false;
+  security.sudo = {
+    wheelNeedsPassword = false;
+    extraRules = [
+      {
+        users = [ "faore" ];
+        commands = [
+          "/run/current-system/sw/bin/systemctl start factorio"
+          "/run/current-system/sw/bin/systemctl restart factorio"
+          "/run/current-system/sw/bin/systemctl stop factorio"
+          "/run/current-system/sw/bin/systemctl status factorio"
+          "/run/current-system/sw/bin/journalctl -e -u factorio"
+        ];
+      }
+    ];
+  };
 
   services.fail2ban = {
     enable = true;
@@ -77,7 +91,10 @@ in
   };
 
   users.mutableUsers = false;
-  users.users = lib.mapAttrs expandUser (import ../keys/ssh.nix);
+  users.users = (lib.mapAttrs expandUser (import <mkaito/keys/ssh.nix>)) //
+  {
+    root = { openssh.authorizedKeys.keys = (import <mkaito/keys/ssh.nix>).chris; };
+  };
 
   nixpkgs.config.allowUnfree = true;
 }

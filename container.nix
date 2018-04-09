@@ -1,5 +1,0 @@
-{
-  adalind = {
-    deployment.targetEnv = "container";
-  };
-}

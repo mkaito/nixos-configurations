@@ -41,12 +41,45 @@ let
   serverSettingsFile = pkgs.writeText "server-settings.json" (builtins.toJSON (filterAttrsRecursive (n: v: v != null) serverSettings));
   whitelistFile = pkgs.writeText "server-whitelist.json" (builtins.toJSON cfg.whitelist);
   modDir = pkgs.factorio-utils.mkModDirDrv cfg.mods;
+
+  ## Run rsync daemon with this module config
+  #  A few notes:
+  #  * Rsync runs as the `factorio` user
+  #  * We can't chroot because we're not root
+  #  * We can't set gid, uid, because we're not root, but we don't need to
+  #    either.
+  factorioRsyncdConf = pkgs.writeText "rsyncd-factorio.conf" ''
+    log file = ${config.services.factorio.stateDir}/rsync.log
+    [mods]
+      use chroot = false
+      comment = Factorio mods folder
+      path = /var/lib/factorio/mods
+      read only = false
+    [saves]
+      use chroot = false
+      comment = Factorio saves folder
+      path = /var/lib/factorio/saves
+      read only = false
+  '';
+
+  ## Prepend this forced command to all SSH keys
+  #  * We force execution of the rsync daemon with the config above
+  #  * We prevent any options that might result in unwanted access
+  #  * Needs to be one line, sorry.
+  factorioRsyncCmd = ''command="rsync --config=${factorioRsyncdConf} --server --daemon .",no-agent-forwarding,no-port-forwarding,no-user-rc,no-X11-forwarding,no-pty'';
 in
 {
   disabledModules = [ "services/games/factorio.nix" ];
   options = {
     services.factorio = {
       enable = mkEnableOption name;
+      autoStart = mkOption {
+        type = types.bool;
+        default = true;
+        description = ''
+          Start the factorio service on boot
+        '';
+      };
       port = mkOption {
         type = types.int;
         default = 34197;
@@ -92,20 +125,8 @@ in
         '';
       };
       mods = mkOption {
-        type = types.listOf types.package;
-        default = [];
-        description = ''
-          Mods the server should install and activate.
-
-          The derivations in this list must "build" the mod by simply copying
-          the .zip, named correctly, into the output directory. Eventually,
-          there will be a way to pull in the most up-to-date list of
-          derivations via nixos-channel. Until then, this is for experts only.
-        '';
-      };
-      manualMods = mkOption {
         type = types.bool;
-        default = false;
+        default = true;
         description = ''
           Enable manual mod management. This will put the mods folder in the
           stateDir for you to handle manually, for example via rsync.
@@ -167,6 +188,22 @@ in
           Game password.
         '';
       };
+      rsync = mkOption {
+        type = types.bool;
+        default = false;
+        description = ''
+          Enable rsync-over-ssh access on the factorio user.
+
+          Configures two rsync modules: mods and saves.
+        '';
+      };
+      rsyncKeys = mkOption {
+        type = types.listOf types.string;
+        default = [];
+        description = ''
+          A list of SSH keys that should have access to rsync-over-ssh on the factorio user.
+        '';
+      };
       requireUserVerification = mkOption {
         type = types.bool;
         default = true;
@@ -196,8 +233,8 @@ in
 
   config = mkIf cfg.enable {
     assertions = [
-      { assertion = !(cfg.manualMods && cfg.mods != []);
-        message = "Do not use both mods and manualMods.";
+      { assertion = !(cfg.rsync && cfg.rsyncKeys == []);
+        message = "Please define rsyncKeys if you use rsync for factorio.";
       }
     ];
 
@@ -208,7 +245,10 @@ in
         group           = "factorio";
         home            = stateDir;
         createHome      = true;
-      };
+      } // (optionalAttrs cfg.rsync {
+        shell = pkgs.bash;
+        openssh.authorizedKeys.keys = map (x: factorioRsyncCmd + " " + x) cfg.rsyncKeys;
+      });
 
       groups.factorio = {
         gid = config.ids.gids.factorio;
@@ -217,7 +257,7 @@ in
 
     systemd.services.factorio = {
       description   = "Factorio headless server";
-      # wantedBy      = [ "multi-user.target" ];
+      wantedBy      = mkIf cfg.autoStart [ "multi-user.target" ];
       after         = [ "network.target" ];
 
       preStart = toString [
@@ -227,8 +267,7 @@ in
           "--config=${cfg.configFile}"
           "--create=${mkSavePath cfg.saveName}"
           "--server-banlist=${stateDir}/banlist.json"
-          (optionalString (cfg.manualMods) "--mod-directory=${stateDir}/mods")
-          (optionalString (cfg.mods != []) "--mod-directory=${modDir}")
+          (optionalString (cfg.mods) "--mod-directory=${stateDir}/mods")
           (optionalString (cfg.whitelist != []) "--server-whitelist=${whitelistFile}")
       ];
 
@@ -247,13 +286,13 @@ in
           "--start-server=${mkSavePath cfg.saveName}"
           "--server-settings=${serverSettingsFile}"
           "--server-banlist=${stateDir}/banlist.json"
-          (optionalString (cfg.manualMods) "--mod-directory=${stateDir}/mods")
-          (optionalString (cfg.mods != []) "--mod-directory=${modDir}")
+          (optionalString (cfg.mods) "--mod-directory=${stateDir}/mods")
           (optionalString (cfg.whitelist != []) "--server-whitelist=${whitelistFile}")
         ];
       };
     };
 
     networking.firewall.allowedUDPPorts = [ cfg.port ];
+    networking.firewall.allowedTCPPorts = mkIf cfg.rsync [ 873 ];
   };
 }

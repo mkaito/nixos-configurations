@@ -6,8 +6,6 @@
     ./hardware-configuration.nix
   ];
 
-  networking.firewall.allowedTCPPorts = [ 22 ];
-
   ## Configure the factorio server
   services.factorio = {
     enable = true;

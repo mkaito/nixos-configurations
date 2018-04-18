@@ -6,7 +6,7 @@ let
 in
   {
     network.description = "Factorio server for Underdogs";
-    factorio =
+    remeliez =
     { config, resources, lib, ... }:
     {
       deployment.targetEnv = "ec2";
@@ -19,7 +19,7 @@ in
         securityGroupIds = [ resources.ec2SecurityGroups.factorio-sg.name ];
         securityGroups = [];
         subnetId = lib.mkForce resources.vpcSubnets.factorio-subnet;
-        instanceType = "c5.large";
+        instanceType = "c5.xlarge";
       };
 
       deployment.route53 =

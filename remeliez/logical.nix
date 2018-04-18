@@ -1,3 +1,3 @@
 {
-  factorio = (import ./configuration.nix);
+  remeliez = (import ./configuration.nix);
 }

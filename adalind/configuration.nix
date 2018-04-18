@@ -6,6 +6,11 @@
     <mkaito/adalind/packet.nix>
   ];
 
+  networking.firewall.allowedTCPPorts = [
+    ## HTTP and HTTPS
+    80 443
+  ];
+
   ## Configure the factorio server
   services.factorio = {
     enable = true;
@@ -13,6 +18,21 @@
     rsync = true;
     rsyncKeys = builtins.concatLists (builtins.attrValues (import <mkaito/keys/ssh.nix>));
     autoStart = false;
+  };
+
+  services.nginx = {
+    enable = true;
+    group = "users";
+    virtualHosts = {
+      "files.mkaito.net" = {
+        enableACME = true;
+        forceSSL = true;
+        default = true;
+        locations."/" = {
+          root = "/home/chris/public";
+        };
+      };
+    };
   };
 
   ## IRC Bouncer

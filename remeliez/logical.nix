@@ -1,0 +1,3 @@
+{
+  factorio = (import ./configuration.nix);
+}

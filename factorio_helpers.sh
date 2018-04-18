@@ -1,27 +1,41 @@
-remotehost="factorio.udsgaming.net"
-
 function fac_upload_mods() {
+  echo "Stopping service first..."
+  fac_service "$1" stop
   echo "Uploading mod folder..."
-  rsync -rL --delete -e ssh ~/.factorio/mods/ factorio@$remotehost::mods
-  echo "Restarting service..."
-  fac_service restart
+  rsync -rL --delete -e ssh ~/.factorio/mods/ factorio@"$1"::mods
+  echo "Starting service..."
+  fac_service "$1" restart
   echo "Done. Please allow a few seconds for the service to boot."
 }
 
 function fac_download_mods() {
   echo "Downloading mods from server..."
-  rsync -rL --delete -e ssh factorio@$remotehost::mods ~/.factorio/mods/
+  rsync -rL --delete -e ssh factorio@"$1"::mods ~/.factorio/mods/
   echo "Done."
 }
 
+function fac_latest_save() {
+  ## This actually seems the best way to get the most recent file in a folder.
+  # shellcheck disable=SC2012
+  echo -n "$HOME/.factorio/saves/$(ls -t ~/.factorio/saves | head -n1)"
+}
+
 function fac_upload_save() {
-  if [[ -e $1 ]]; then
+  if [[ -z $2 ]]; then
+    sfile="$(fac_latest_save)"
+  else
+    sfile="$2"
+  fi
+
+  if [[ -e $sfile ]]; then
     echo "Stopping service first..."
-    fac_service stop
+    fac_service "$1" stop
     echo "Uploading save..."
-    rsync -z -e ssh "$1" factorio@$remotehost::saves/default.zip
+    rsync -z -e ssh "$sfile" factorio@"$1"::saves/default.zip
+    echo "Uploading mod folder..."
+    rsync -rL --delete -e ssh ~/.factorio/mods/ factorio@"$1"::mods
     echo "Starting service..."
-    fac_service start
+    fac_service "$1" start
     echo "Done. Please allow a few seconds for the service to boot."
   else
     echo "Am I supposed to guess which save you want to upload?"
@@ -29,13 +43,13 @@ function fac_upload_save() {
 }
 
 function fac_service() {
-  ssh $remotehost sudo systemctl "${1:-start}" factorio
+  ssh "$1" sudo systemctl "${2:-start}" factorio
 }
 
 function usage() {
   cat <<-EOF
 		USAGE
-		fac [module] [action]
+		fac [adalind|faore] [module] [action]
 
 		SYNOPSIS
 		This shell function helps you manage your factorio server by wrapping common actions.
@@ -54,14 +68,30 @@ function usage() {
 
 function fac() {
   [[ ! -z "$DEBUG" ]] && set -x
+
+  ## Define target host
+  targethost=home.admt
+  case "$1" in
+    faore)
+      targethost=home.admt
+      shift
+      ;;
+    adalind|factorio)
+      targethost="$1.mkaito.net"
+      shift
+      ;;
+    *)
+      ;;
+  esac
+
   case "$1" in
     mods)
       case "$2" in
         upload)
-          fac_upload_mods
+          fac_upload_mods "$targethost"
           ;;
         download)
-          fac_download_mods
+          fac_download_mods "$targethost"
           ;;
         *)
           echo "Wat"
@@ -71,7 +101,7 @@ function fac() {
     save)
       case "$2" in
         upload)
-          fac_upload_save "$3"
+          fac_upload_save "$targethost" "$3"
           ;;
         download)
           echo "Log into the game and save it from there, lazy bum."
@@ -84,19 +114,19 @@ function fac() {
     service)
       case "$2" in
         start)
-          fac_service start
+          fac_service "$targethost" start
           ;;
         stop)
-          fac_service stop
+          fac_service "$targethost" stop
           ;;
         restart)
-          fac_service restart
+          fac_service "$targethost" restart
           ;;
         log)
-          ssh factorio.udsgaming.net sudo journalctl -ef -u factorio
+          ssh "$targethost" sudo journalctl -ef -u factorio
           ;;
         status)
-          fac_service status
+          fac_service "$targethost" status
           ;;
         *)
           echo "Wat"
@@ -109,3 +139,7 @@ function fac() {
   esac
   [[ ! -z "$DEBUG" ]] && set +x
 }
+
+# Local Variables:
+# sh-shell: zsh
+# End:

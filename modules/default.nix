@@ -45,18 +45,6 @@ in
 
   security.sudo = {
     wheelNeedsPassword = false;
-    extraRules = [
-      {
-        users = [ "faore" ];
-        commands = [
-          "/run/current-system/sw/bin/systemctl start factorio"
-          "/run/current-system/sw/bin/systemctl restart factorio"
-          "/run/current-system/sw/bin/systemctl stop factorio"
-          "/run/current-system/sw/bin/systemctl status factorio"
-          "/run/current-system/sw/bin/journalctl -e -u factorio"
-        ];
-      }
-    ];
   };
 
   services.fail2ban = {
@@ -80,10 +68,10 @@ in
   services.nixosManual.enable = false;
 
   # Enable Prometheus exporting on all nodes
-  services.prometheus.exporters.node = {
-    enable = true;
-    openFirewall = true;
-  };
+  # services.prometheus.exporters.node = {
+  #   enable = true;
+  #   openFirewall = true;
+  # };
 
   services.openssh = {
     enable = true;

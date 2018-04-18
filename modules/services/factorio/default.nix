@@ -297,6 +297,7 @@ in
 
     system.activationScripts.factorio = ''
       mkdir -p ${stateDir}/{mods,saves}
+      chown -R factorio:factorio ${stateDir}
     '';
   };
 }

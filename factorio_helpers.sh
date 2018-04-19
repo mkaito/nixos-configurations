@@ -1,16 +1,20 @@
 function fac_upload_mods() {
   echo "Stopping service first..."
   fac_service "$1" stop
+
   echo "Uploading mod folder..."
   rsync -rL --delete -e ssh ~/.factorio/mods/ factorio@"$1"::mods
+
   echo "Starting service..."
   fac_service "$1" restart
+
   echo "Done. Please allow a few seconds for the service to boot."
 }
 
 function fac_download_mods() {
   echo "Downloading mods from server..."
   rsync -rL --delete -e ssh factorio@"$1"::mods ~/.factorio/mods/
+
   echo "Done."
 }
 
@@ -30,15 +34,21 @@ function fac_upload_save() {
   if [[ -e $sfile ]]; then
     echo "Stopping service first..."
     fac_service "$1" stop
+
     echo "Uploading save..."
     rsync -z -e ssh "$sfile" factorio@"$1"::saves/default.zip
+
     echo "Uploading mod folder..."
     rsync -rL --delete -e ssh ~/.factorio/mods/ factorio@"$1"::mods
+
     echo "Starting service..."
     fac_service "$1" start
+
     echo "Done. Please allow a few seconds for the service to boot."
+
   else
     echo "Am I supposed to guess which save you want to upload?"
+
   fi
 }
 
@@ -76,66 +86,85 @@ function fac() {
       targethost=home.admt
       shift
       ;;
+
     adalind|factorio)
       targethost="$1.mkaito.net"
       shift
       ;;
+
     *)
       ;;
   esac
 
   case "$1" in
+
     mods)
       case "$2" in
         upload)
           fac_upload_mods "$targethost"
           ;;
+
         download)
           fac_download_mods "$targethost"
           ;;
+
         *)
           echo "Wat"
           ;;
+
       esac
-      ;;
+      ;; # End case mods
+
     save)
       case "$2" in
         upload)
           fac_upload_save "$targethost" "$3"
           ;;
+
         download)
           echo "Log into the game and save it from there, lazy bum."
           ;;
+
         *)
           echo "Wat"
           ;;
+
       esac
-      ;;
+      ;; # end case save
+
     service)
       case "$2" in
         start)
           fac_service "$targethost" start
           ;;
+
         stop)
           fac_service "$targethost" stop
           ;;
+
         restart)
           fac_service "$targethost" restart
           ;;
+
         log)
           ssh "$targethost" sudo journalctl -ef -u factorio
           ;;
+
         status)
           fac_service "$targethost" status
           ;;
+
         *)
           echo "Wat"
           ;;
+
       esac
-      ;;
+      ;; # End case service
+
     *)
       usage
       ;;
+
   esac
   [[ ! -z "$DEBUG" ]] && set +x
 }
@@ -143,3 +172,5 @@ function fac() {
 # Local Variables:
 # sh-shell: zsh
 # End:
+
+# vim:ft=zsh

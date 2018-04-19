@@ -4,6 +4,7 @@
     <mkaito/modules>
     <mkaito/adalind/hardware-configuration.nix>
     <mkaito/adalind/packet.nix>
+    (builtins.fetchTarball "https://github.com/r-raymond/nixos-mailserver/archive/v2.1.3.tar.gz")
   ];
 
   networking.firewall.allowedTCPPorts = [
@@ -66,5 +67,26 @@
         };
       };
     };
+  };
+
+  # Mail server
+  mailserver = {
+    enable = true;
+    fqdn = "adalind.mkaito.net";
+    domains = [ "mkaito.net" "mkaito.com" "udsgaming.net" ];
+
+    loginAccounts = {
+      "chris@mkaito.net" = {
+        hashedPassword = "$6$XsKtXFVJAF$QjloeO/oFG.eEx9IR..CdBc2KCwpAOg/vHwrNpVWOuXiJ5TBhdNV01TVFt5pUtnmWws1P6TUYDJTSPYHX5QKK1";
+        aliases = [
+          "chris@mkaito.com"
+          "me@mkaito.com"
+        ];
+      };
+    };
+
+    certificateScheme = 3;
+    enableImap = true;
+    enableImapSsl = true;
   };
 }

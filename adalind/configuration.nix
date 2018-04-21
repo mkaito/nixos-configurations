@@ -85,4 +85,19 @@
     enableImap = true;
     enableImapSsl = true;
   };
+
+  # Temporary fix for Dovecot 2.3
+  security.dhparams = {
+    enable = true;
+    params = {
+      dovecot = 2048;
+    };
+  };
+
+  services.dovecot2.extraConfig = ''
+    ssl_dh = </var/lib/dhparams/dovecot.pem
+  '';
+
+  systemd.services.dovecot2.requires = [ "dhparams-gen-dovecot.service" ];
+  systemd.services.dovecot2.after = [ "dhparams-gen-dovecot.service" ];
 }

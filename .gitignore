@@ -1,4 +1,6 @@
 /result
+/.direnv
+/.direnv.*
+/gist
 packet.nix
 packet/
-/gist

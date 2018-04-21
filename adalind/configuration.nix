@@ -12,13 +12,9 @@
     80 443
   ];
 
-  ## Configure the factorio server
-  services.factorio = {
-    enable = true;
-    whitelist = [ "mkaito" "faore" ];
-    rsync = true;
-    rsyncKeys = builtins.concatLists (builtins.attrValues (import <mkaito/keys/ssh.nix>));
-    autoStart = false;
+  networking.defaultGateway6 = {
+    address = "2604:1380:2000:a800::";
+    interface = "bond0";
   };
 
   services.nginx = {

@@ -14,6 +14,7 @@ in
   environment.systemPackages = with pkgs; [
     binutils
     dnsutils
+    fd
     gdb
     git
     htop
@@ -22,6 +23,7 @@ in
     lsof
     mosh
     ncdu
+    ripgrep
     rsync
     rxvt_unicode.terminfo
     strace

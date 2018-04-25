@@ -9,7 +9,7 @@
   ## Configure the factorio server
   services.factorio = {
     enable = true;
-    whitelist = [ "mkaito" "faore" ];
+    whitelist = [ "mkaito" "faore" "CrazyNinja7" ];
     rsync = true;
     rsyncKeys = builtins.concatLists (builtins.attrValues (import <mkaito/keys/ssh.nix>));
     autoStart = true;

@@ -9,13 +9,15 @@
 
   networking.firewall.allowedTCPPorts = [
     ## HTTP and HTTPS
-    80 443
+    80 443 2022
   ];
 
   networking.defaultGateway6 = {
     address = "2604:1380:2000:a800::";
     interface = "bond0";
   };
+
+  services.openssh.gatewayPorts = "yes";
 
   services.nginx = {
     enable = true;

@@ -67,6 +67,7 @@ let
   #  * We prevent any options that might result in unwanted access
   #  * Needs to be one line, sorry.
   factorioRsyncCmd = ''command="rsync --config=${factorioRsyncdConf} --server --daemon .",no-agent-forwarding,no-port-forwarding,no-user-rc,no-X11-forwarding,no-pty'';
+  modzip = "/tmp/mods.zip";
 in
 {
   disabledModules = [ "services/games/factorio.nix" ];
@@ -239,6 +240,7 @@ in
     ];
 
     users = {
+      users.nginx.extraGroups = [ "factorio" ];
       users.factorio = {
         uid             = config.ids.uids.factorio;
         description     = "Factorio server user";
@@ -255,20 +257,40 @@ in
       };
     };
 
+    services.nginx = {
+      enable = true;
+      virtualHosts.factorio = {
+        default = true;
+        locations."=/mods.zip" = {
+          alias = "/var/lib/factorio/mods.zip";
+        };
+      };
+    };
+
+
     systemd.services.factorio = {
       description   = "Factorio headless server";
       wantedBy      = mkIf cfg.autoStart [ "multi-user.target" ];
       after         = [ "network.target" ];
+      path          = [ pkgs.zip ];
 
-      preStart = toString [
-        "test -e ${stateDir}/saves/${cfg.saveName}.zip"
-        "||"
-        "${factorio}/bin/factorio"
+      preStart = lib.concatStringsSep "\n" [
+        (toString [
+          "test -e ${stateDir}/saves/${cfg.saveName}.zip"
+          "||"
+          "${factorio}/bin/factorio"
           "--config=${cfg.configFile}"
           "--create=${mkSavePath cfg.saveName}"
           "--server-banlist=${stateDir}/banlist.json"
           (optionalString (cfg.mods) "--mod-directory=${stateDir}/mods")
           (optionalString (cfg.whitelist != []) "--server-whitelist=${whitelistFile}")
+        ])
+        ''
+          cd /var/lib/factorio/mods
+          rm -f ../mods.zip
+          zip -r9 ../mods.zip *
+          chmod g+r ../mods.zip
+        ''
       ];
 
       serviceConfig = {
@@ -298,6 +320,7 @@ in
     system.activationScripts.factorio = ''
       mkdir -p ${stateDir}/{mods,saves}
       chown -R factorio:factorio ${stateDir}
+      chmod g+rx /var/lib/factorio
     '';
   };
 }

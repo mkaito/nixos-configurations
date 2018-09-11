@@ -35,7 +35,7 @@ function fac_upload_save() {
     echo "Stopping service first..."
     fac_service "$1" stop
 
-    echo "Uploading save..."
+    echo "Uploading save $(basename "$sfile")..."
     rsync -z -e ssh "$sfile" factorio@"$1"::saves/default.zip
 
     echo "Uploading mod folder..."

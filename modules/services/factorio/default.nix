@@ -237,6 +237,10 @@ in
       { assertion = !(cfg.rsync && cfg.rsyncKeys == []);
         message = "Please define rsyncKeys if you use rsync for factorio.";
       }
+      {
+        assertion = !(cfg.requireUserVerification && cfg.whitelist == []);
+        message = "Please enable requireUserVerification if you use whitelist";
+      }
     ];
 
     users = {
@@ -315,7 +319,7 @@ in
     };
 
     networking.firewall.allowedUDPPorts = [ cfg.port ];
-    networking.firewall.allowedTCPPorts = mkIf cfg.rsync [ 873 ];
+    networking.firewall.allowedTCPPorts = [ 80 ] ++ (if cfg.rsync then [ 873 ] else []);
 
     system.activationScripts.factorio = ''
       mkdir -p ${stateDir}/{mods,saves}

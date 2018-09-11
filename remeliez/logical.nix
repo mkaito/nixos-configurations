@@ -1,3 +1,0 @@
-{
-  remeliez = (import ./configuration.nix);
-}

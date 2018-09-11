@@ -11,14 +11,6 @@ adalind:
 faore:
 	$(MAKE) -C faore
 
-# n1-highcpu-2 on GCE
-mirakell:
-	$(MAKE) -C mirakell
-
-# c5.large on AWS
-remeliez:
-	$(MAKE) -C remeliez
-
 gist: factorio_helpers.sh
 	gist -p -u $(GIST_HASH) factorio_helpers.sh
 	touch gist

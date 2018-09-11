@@ -8,6 +8,10 @@ fetchTarball {
   # sha256 = "10sbyna5p03x7h6mc5cfl4dh8cd2ah4n8zxqnlm6asbjrr6n8xs7";
 
   ## 18.03
-  url = https://github.com/NixOS/nixpkgs/archive/c0c5571ec1a33a5109c122b8821eb15c36cbb1ec.tar.gz;
-  sha256 = "1qbmfw68rkpd5spdp7rbxnxsfiak718n2w5ajjfg641y5ngm7fms";
+  # url = https://github.com/NixOS/nixpkgs/archive/c0c5571ec1a33a5109c122b8821eb15c36cbb1ec.tar.gz;
+  # sha256 = "1qbmfw68rkpd5spdp7rbxnxsfiak718n2w5ajjfg641y5ngm7fms";
+
+  ## 18.09
+  url = https://github.com/NixOS/nixpkgs/archive/d925fe3f81c6dd6e62294315a56cc0456ac4b42a.tar.gz;
+  sha256 = "0fnkzd73s11zp9m739l4gq2qvjrhd13n3zy2v59nab89aac99nlz";
 }

@@ -20,7 +20,7 @@ with lib;
 
   services.factorio = {
     enable = true;
-    whitelist = [ "mkaito" "faore" "CrazyNinja7" ];
+    whitelist = [ "mkaito" "faore" "CrazyNinja7" "Celestar340" ];
     rsync = true;
     rsyncKeys = builtins.concatLists (builtins.attrValues (import <mkaito/keys/ssh.nix>));
     autoStart = true;

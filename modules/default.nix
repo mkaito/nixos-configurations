@@ -9,6 +9,7 @@ in
 {
   imports = [
     ./services/factorio
+    <shaibot/modules/services/shaibot>
   ];
 
   environment.systemPackages = with pkgs; [
@@ -67,7 +68,7 @@ in
     options = ''--max-freed "$((15 * 1024**3 - 1024 * $(df -P -k /nix/store | tail -n 1 | ${pkgs.gawk}/bin/awk '{ print $4 }')))" --delete-older-than 30d'';
   };
 
-  services.nixosManual.enable = false;
+  documentation.nixos.enable = false;
 
   # Enable Prometheus exporting on all nodes
   # services.prometheus.exporters.node = {

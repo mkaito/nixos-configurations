@@ -1,9 +1,11 @@
+FACTORIO_BASE="$HOME/.factorio"
+
 function fac_upload_mods() {
   echo "Stopping service first..."
   fac_service "$1" stop
 
   echo "Uploading mod folder..."
-  rsync -rL --delete -e ssh ~/.factorio/mods/ factorio@"$1"::mods
+  rsync -rL --delete -e ssh "$FACTORIO_BASE/mods/" "factorio@${1}::mods"
 
   echo "Starting service..."
   fac_service "$1" restart
@@ -13,7 +15,7 @@ function fac_upload_mods() {
 
 function fac_download_mods() {
   echo "Downloading mods from server..."
-  rsync -rL --delete -e ssh factorio@"$1"::mods ~/.factorio/mods/
+  rsync -rL --delete -e ssh "factorio@${1}::mods" "$FACTORIO_BASE/mods/"
 
   echo "Done."
 }
@@ -36,10 +38,10 @@ function fac_upload_save() {
     fac_service "$1" stop
 
     echo "Uploading save $(basename "$sfile")..."
-    rsync -z -e ssh "$sfile" factorio@"$1"::saves/default.zip
+    rsync -z -e ssh "$sfile" "factorio@${1}::saves/default.zip"
 
     echo "Uploading mod folder..."
-    rsync -rL --delete -e ssh ~/.factorio/mods/ factorio@"$1"::mods
+    rsync -rL --delete -e ssh "$FACTORIO_BASE/mods/" "factorio@${1}::mods"
 
     echo "Starting service..."
     fac_service "$1" start
@@ -80,7 +82,7 @@ function fac() {
   [[ ! -z "$DEBUG" ]] && set -x
 
   ## Define target host
-  targethost=home.admt
+  targethost=adalind
   case "$1" in
     faore)
       targethost=home.admt

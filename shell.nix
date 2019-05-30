@@ -11,11 +11,13 @@ in
 
 stdenv.mkDerivation {
   name = "serokell-ops-env";
-  buildInputs = with pkgs; [ nixops-git ];
+  buildInputs = with pkgs; [ nixops-git gist ];
 
   NIX_PATH = builtins.concatStringsSep ":" [
     "nixpkgs=${toString pkgs.path}"
     "nixpkgs-overlays=${overlays}"
     "mkaito=${src}"
+    "snm=${builtins.toString /home/chris/dev/build/nixos-mailserver}"
+    "shaibot=${builtins.toString /home/chris/dev/shaibot}"
   ];
 }

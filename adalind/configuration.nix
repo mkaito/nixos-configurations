@@ -1,11 +1,18 @@
 {config, pkgs, lib, ...}:
 with lib;
-{
+let
+  sshKeys = import <mkaito/keys/ssh.nix>;
+in
+rec {
   imports = [
     <mkaito/modules>
     <mkaito/adalind/hardware-configuration.nix>
     <mkaito/adalind/packet.nix>
-    (builtins.fetchTarball "https://gitlab.com/simple-nixos-mailserver/nixos-mailserver/-/archive/v2.1.4/nixos-mailserver-v2.1.4.tar.gz")
+    <snm>
+    # (builtins.fetchTarball {
+    #   url = "https://gitlab.com/simple-nixos-mailserver/nixos-mailserver/-/archive/v2.2.0/nixos-mailserver-v2.2.0.tar.gz";
+    #   sha256 = "0gqzgy50hgb5zmdjiffaqp277a68564vflfpjvk1gv6079zahksc";
+    # })
   ];
 
   networking.firewall.allowedTCPPorts = [
@@ -18,11 +25,13 @@ with lib;
     interface = "bond0";
   };
 
+  services.shaibot.enable = true;
+
   services.factorio = {
     enable = true;
     whitelist = [ "mkaito" "faore" "CrazyNinja7" "Celestar340" ];
     rsync = true;
-    rsyncKeys = builtins.concatLists (builtins.attrValues (import <mkaito/keys/ssh.nix>));
+    rsyncKeys = builtins.concatLists (builtins.attrValues sshKeys);
     autoStart = true;
   };
 
@@ -34,16 +43,18 @@ with lib;
     packages = with pkgs; [
       su
       bash
-      postgresql100
+      postgresql_10
     ];
   };
 
   services.postgresql = {
     enable = true;
-    package = pkgs.postgresql100;
+    package = pkgs.postgresql_10;
     initialScript = pkgs.writeText "pg-init.sql" ''
         CREATE ROLE test WITH LOGIN CREATEDB;
+        CREATE ROLE shaibot WITH LOGIN CREATEDB;
     '';
+
     authentication = mkForce ''
         # Generated file; do not edit!
         # TYPE  DATABASE        USER            ADDRESS                 METHOD
@@ -61,12 +72,35 @@ with lib;
   services.nginx = {
     enable = true;
     group = "users";
+    commonHttpConfig = ''
+      access_log syslog:server=unix:/dev/log,tag=nginx,severity=info combined;
+      upstream sinatra {
+        server 127.0.0.1:27483 fail_timeout=0;
+      }
+    '';
     virtualHosts = {
-      "files.mkaito.net" = {
+      files = {
+        serverName = "files.mkaito.net";
+        default = true;
         enableACME = true;
         forceSSL = true;
         locations."/" = {
           root = "/home/chris/public";
+        };
+      };
+      derp = {
+        serverName = "derp.mkaito.net";
+        enableACME = true;
+        forceSSL = true;
+        root = "/home/chris/derp";
+        locations."/" = {
+          tryFiles = "$uri/index.html $uri.html $uri @app";
+          extraConfig = ''
+            add_header Access-Control-Allow-Origin "*";
+          '';
+        };
+        locations."@app" = {
+          proxyPass = "http://sinatra";
         };
       };
     };
@@ -106,15 +140,19 @@ with lib;
   };
 
   # Mail server
-  mailserver = {
+  mailserver = let
+    megabytesToBytes = n: n * 1048576;
+  in {
     enable = true;
     fqdn = "adalind.mkaito.net";
     domains = [ "mkaito.net" "mkaito.com" "udsgaming.net" ];
+    messageSizeLimit = megabytesToBytes 50;
 
     loginAccounts = {
       "chris@mkaito.net" = {
         hashedPassword = "$6$XsKtXFVJAF$QjloeO/oFG.eEx9IR..CdBc2KCwpAOg/vHwrNpVWOuXiJ5TBhdNV01TVFt5pUtnmWws1P6TUYDJTSPYHX5QKK1";
         aliases = [
+          "@mkaito.net"
           "chris@mkaito.com"
           "me@mkaito.com"
         ];
@@ -146,5 +184,11 @@ with lib;
     postfix.enable = mkForce false;
   };
 
-  system.nixos.stateVersion = "18.09";
+  services.gitolite = {
+    enable = true;
+    adminPubkey = builtins.head sshKeys.chris;
+    user = "git";
+  };
+
+  system.stateVersion = "18.09";
 }

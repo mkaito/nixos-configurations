@@ -4,7 +4,7 @@ with lib;
 
 let
   cfg = config.services.factorio;
-  factorio = pkgs.factorio-headless;
+  factorio = pkgs.factorio-headless-experimental;
   name = "Factorio";
   stateDir = cfg.stateDir;
   mkSavePath = name: "${stateDir}/saves/${name}.zip";
@@ -264,7 +264,7 @@ in
     services.nginx = {
       enable = true;
       virtualHosts.factorio = {
-        default = true;
+        serverName = "factorio.adalint.net";
         locations."=/mods.zip" = {
           alias = "/var/lib/factorio/mods.zip";
         };
@@ -290,10 +290,10 @@ in
           (optionalString (cfg.whitelist != []) "--server-whitelist=${whitelistFile}")
         ])
         ''
-          cd /var/lib/factorio/mods
-          rm -f ../mods.zip
-          zip -r9 ../mods.zip *
-          chmod g+r ../mods.zip
+          # cd /var/lib/factorio/mods
+          # rm -f ../mods.zip
+          # zip -r9 ../mods.zip *
+          # chmod g+r ../mods.zip
         ''
       ];
 
@@ -314,6 +314,7 @@ in
           "--server-banlist=${stateDir}/banlist.json"
           (optionalString (cfg.mods) "--mod-directory=${stateDir}/mods")
           (optionalString (cfg.whitelist != []) "--server-whitelist=${whitelistFile}")
+          (optionalString (cfg.whitelist != []) "--use-server-whitelist")
         ];
       };
     };

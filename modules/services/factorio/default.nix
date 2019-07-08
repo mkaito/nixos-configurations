@@ -246,7 +246,7 @@ in
     users = {
       users.nginx.extraGroups = [ "factorio" ];
       users.factorio = {
-        uid             = config.ids.uids.factorio;
+        uid             = 241;
         description     = "Factorio server user";
         group           = "factorio";
         home            = stateDir;
@@ -257,7 +257,7 @@ in
       });
 
       groups.factorio = {
-        gid = config.ids.gids.factorio;
+        gid = 241;
       };
     };
 

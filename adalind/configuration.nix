@@ -18,12 +18,10 @@ rec {
   networking.firewall.allowedTCPPorts = [
     ## HTTP and HTTPS
     80 443 2022
+    5222 # Prosody c2s
+    5269 # Prosody s2s
+    5555 # Prosody mod_proxy65
   ];
-
-  networking.defaultGateway6 = {
-    address = "2604:1380:2000:a800::";
-    interface = "bond0";
-  };
 
   services.shaibot.enable = true;
 
@@ -78,6 +76,7 @@ rec {
         server 127.0.0.1:27483 fail_timeout=0;
       }
     '';
+
     virtualHosts = {
       files = {
         serverName = "files.mkaito.net";
@@ -88,6 +87,7 @@ rec {
           root = "/home/chris/public";
         };
       };
+
       derp = {
         serverName = "derp.mkaito.net";
         enableACME = true;
@@ -189,6 +189,51 @@ rec {
     adminPubkey = builtins.head sshKeys.chris;
     user = "git";
   };
+
+  services.prosody = {
+    enable = true;
+    admins = [ "chris@mkaito.net" ];
+
+    modules = {
+      mam = true;
+      proxy65 = true;
+    };
+
+    extraConfig = ''
+      proxy65_ports = { 5555 }
+    '';
+
+    virtualHosts = {
+      "mkaito.net" = {
+        enabled = true;
+        domain = "mkaito.net";
+
+        ssl = {
+          cert = "/var/lib/acme/adalind.mkaito.net/fullchain.pem";
+          key  = "/var/lib/acme/adalind.mkaito.net/key.pem";
+        };
+
+        extraConfig = ''
+          Component "proxy.mkaito.net" "proxy65"
+            proxy65_address = "adalind.mkaito.net"
+            proxy65_acl = { "mkaito.net" }
+        '';
+      };
+    };
+  };
+
+  security.acme.certs."adalind.mkaito.net" = {
+    allowKeysForGroup = true;
+    group = mkForce "prosody";
+    extraDomains = {
+      "mkaito.net" = null;
+    };
+    postRun = ''
+      systemctl reload prosody
+    '';
+  };
+
+  programs.mtr.enable = true;
 
   users.users.root.hashedPassword = "$6$lTBGqUqKYw$sBQXsEfL5FqwYbJlyejWRoagNUjoALM6VCtz7qI6veS.lIluw9cPx8NDmoinWFzS.g8WBuZCQZxs8NTmns/G4/";
   users.users.chris.hashedPassword = "$6$5cT0x8HjQq$CmQt274.cqvOlJM/9M1qTBSlcH19G8iaxHNkFRqMZAUtuhHjDGSkfqb5LEd2C7fQtLpXnUSQWYcZu3qsbRJZr.";

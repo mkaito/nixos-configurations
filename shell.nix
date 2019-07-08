@@ -11,7 +11,7 @@ in
 
 stdenv.mkDerivation {
   name = "serokell-ops-env";
-  buildInputs = with pkgs; [ nixops-git gist ];
+  buildInputs = with pkgs; [ nixops gist ];
 
   NIX_PATH = builtins.concatStringsSep ":" [
     "nixpkgs=${toString pkgs.path}"

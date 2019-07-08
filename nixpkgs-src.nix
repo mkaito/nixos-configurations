@@ -16,6 +16,10 @@ fetchTarball {
   # sha256 = "0fnkzd73s11zp9m739l4gq2qvjrhd13n3zy2v59nab89aac99nlz";
 
   # nixos-unstable-small 2019.03.18
-  url = https://github.com/NixOS/nixpkgs/archive/b16f32acd426d6942e57ab59a999ad22aee5c62a.tar.gz;
-  sha256 = "13g7s9qbzxwvfjgr4a6fwi7h6ggp681l1syl71viqrjgvd1g3ylw";
+  # url = https://github.com/NixOS/nixpkgs/archive/b16f32acd426d6942e57ab59a999ad22aee5c62a.tar.gz;
+  # sha256 = "13g7s9qbzxwvfjgr4a6fwi7h6ggp681l1syl71viqrjgvd1g3ylw";
+
+  # nixos-unstable-small 2019.06.05
+  url = https://github.com/NixOS/nixpkgs/archive/df3ec3a9624ab3022069e18593724b41bbcb2ca8.tar.gz;
+  sha256 = "09i46b32cmid3yzz0jzf0kdnn9dircfsqln0xhw8f88ihrd6s1i8";
 }

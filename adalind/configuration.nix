@@ -9,6 +9,8 @@ rec {
     <mkaito/adalind/hardware-configuration.nix>
     <mkaito/adalind/packet.nix>
     <snm>
+    <dust/nix/modules/services/dust>
+
     # (builtins.fetchTarball {
     #   url = "https://gitlab.com/simple-nixos-mailserver/nixos-mailserver/-/archive/v2.2.0/nixos-mailserver-v2.2.0.tar.gz";
     #   sha256 = "0gqzgy50hgb5zmdjiffaqp277a68564vflfpjvk1gv6079zahksc";
@@ -23,7 +25,13 @@ rec {
     5555 # Prosody mod_proxy65
   ];
 
-  services.shaibot.enable = true;
+  services.shaibot.enable = false;
+
+  services.dust = {
+    token = "NTk4OTg4ODA4NzQ2MzAzNTIw.XSe5ZQ.28tcGZ77EAmr05ddsrYj0CGzhtA";
+    enable = true;
+    logLevel = "info,dust=trace";
+  };
 
   services.factorio = {
     enable = true;
@@ -49,8 +57,10 @@ rec {
     enable = true;
     package = pkgs.postgresql_10;
     initialScript = pkgs.writeText "pg-init.sql" ''
-        CREATE ROLE test WITH LOGIN CREATEDB;
-        CREATE ROLE shaibot WITH LOGIN CREATEDB;
+        CREATE USER chris SUPERUSER;
+        CREATE USER test CREATEDB;
+        CREATE USER shaibot CREATEDB;
+        CREATE USER dust CREATEDB;
     '';
 
     authentication = mkForce ''
@@ -147,6 +157,7 @@ rec {
     fqdn = "adalind.mkaito.net";
     domains = [ "mkaito.net" "mkaito.com" "udsgaming.net" ];
     messageSizeLimit = megabytesToBytes 50;
+    hierarchySeparator = "/";
 
     loginAccounts = {
       "chris@mkaito.net" = {
@@ -161,7 +172,7 @@ rec {
 
     certificateScheme = 3;
     enableImap = true;
-    # enableImapSsl = true;
+    enableImapSsl = true;
   };
 
   # Temporary fix for Dovecot 2.3
@@ -237,6 +248,10 @@ rec {
 
   users.users.root.hashedPassword = "$6$lTBGqUqKYw$sBQXsEfL5FqwYbJlyejWRoagNUjoALM6VCtz7qI6veS.lIluw9cPx8NDmoinWFzS.g8WBuZCQZxs8NTmns/G4/";
   users.users.chris.hashedPassword = "$6$5cT0x8HjQq$CmQt274.cqvOlJM/9M1qTBSlcH19G8iaxHNkFRqMZAUtuhHjDGSkfqb5LEd2C7fQtLpXnUSQWYcZu3qsbRJZr.";
+
+  # Deployment key used on builds.sr.ht
+  #   secret: 04e2a5e7-5c88-45ad-a806-c5d0073343dc
+  users.users.root.openssh.authorizedKeys.keys = ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMGdwmaXyjrewrD5Bc6zpEJfzi38FDR5kqUI2rqKNcG6"];
 
   system.stateVersion = "18.09";
 }

@@ -19,5 +19,6 @@ stdenv.mkDerivation {
     "mkaito=${src}"
     "snm=${builtins.toString /home/chris/dev/build/nixos-mailserver}"
     "shaibot=${builtins.toString /home/chris/dev/shaibot}"
+    "dust=${builtins.toString /home/chris/dev/ttp/dust}"
   ];
 }

@@ -23,6 +23,7 @@ in
     ldns
     lsof
     mosh
+    mtr
     ncdu
     ripgrep
     rsync
@@ -40,6 +41,8 @@ in
   networking.firewall.logRefusedConnections = false; # silence logging of scanners and knockers
 
   nix.autoOptimiseStore = true; # autodeduplicate files in store
+
+  nix.trustedUsers = [ "chris" ];
 
   nixpkgs.overlays = [(import <mkaito/pkgs>)];
 

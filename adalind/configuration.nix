@@ -82,9 +82,6 @@ rec {
     group = "users";
     commonHttpConfig = ''
       access_log syslog:server=unix:/dev/log,tag=nginx,severity=info combined;
-      upstream sinatra {
-        server 127.0.0.1:27483 fail_timeout=0;
-      }
     '';
 
     virtualHosts = {
@@ -97,23 +94,15 @@ rec {
           root = "/home/chris/public";
         };
       };
-
-      derp = {
-        serverName = "derp.mkaito.net";
-        enableACME = true;
-        forceSSL = true;
-        root = "/home/chris/derp";
-        locations."/" = {
-          tryFiles = "$uri/index.html $uri.html $uri @app";
-          extraConfig = ''
-            add_header Access-Control-Allow-Origin "*";
-          '';
-        };
-        locations."@app" = {
-          proxyPass = "http://sinatra";
-        };
-      };
     };
+  };
+
+  systemd.services.cleanup-public-shit = {
+    path = with pkgs; [ findutils ];
+    script = ''
+      find /home/chris/public -mtime +365 -delete
+    '';
+    startAt = "weekly";
   };
 
   ## IRC Bouncer
@@ -133,10 +122,10 @@ rec {
       '';
       networks = {
         freenode = {
-          channels = [ "#starcraft" "nixos" "#linux" "afewmail" "ruby" "weechat" ];
+          channels = [ "#starcraft" "nixos" "#linux" "#rust" "afewmail" "ruby" "weechat" ];
           server = "irc.freenode.net";
           port = 7000;
-          modules = [ "chansaver" "keepnick" "nickserv TDHHbEvoA8efYveD" "route_replies" ];
+          modules = [ "chansaver" "keepnick" "nickserv 5l8JXyRcUuWFOOqUbHNmyk6Q" "route_replies" ];
           extraConf = ''
             FloodBurst = 4
             FloodRate = 1.00
@@ -185,13 +174,16 @@ rec {
 
   services.dovecot2.extraConfig = ''
     ssl_dh = </var/lib/dhparams/dovecot.pem
+    service imap {
+      vsz_limit = 512 M
+    }
   '';
 
   systemd.services.dovecot2.requires = [ "dhparams-gen-dovecot.service" ];
   systemd.services.dovecot2.after = [ "dhparams-gen-dovecot.service" ];
 
   # Fix rmilter
-  services.rmilter = {
+  services.rspamd = {
     postfix.enable = mkForce false;
   };
 
@@ -242,6 +234,49 @@ rec {
     postRun = ''
       systemctl reload prosody
     '';
+  };
+
+  ## Minecraft server
+  # State dir should have a start.sh file that runs the server
+  services.minecraft-server = {
+    enable = true;
+    eula = true;
+    openFirewall = true;
+  };
+
+  systemd.services.minecraft-server = {
+    path = with pkgs; [ jre bash ];
+    serviceConfig = {
+      ExecStart = lib.mkForce "${config.services.minecraft-server.dataDir}/start.sh";
+    };
+  };
+
+  # Rsync module
+  users.users.minecraft = let
+
+    ## Run rsync daemon with this module config
+    #  A few notes:
+    #  * Rsync runs as the `minecraft` user
+    #  * We can't chroot because we're not root
+    #  * We can't set gid, uid, because we're not root, but we don't need to
+    #    either.
+    rsyncdConf = pkgs.writeText "rsyncd-minecraft.conf" ''
+      log file = ${config.services.minecraft-server.dataDir}/rsync.log
+      [state]
+        use chroot = false
+        comment = Minecraft state
+        path = /var/lib/minecraft
+        read only = false
+    '';
+
+    ## Prepend this forced command to all SSH keys
+    #  * We force execution of the rsync daemon with the config above
+    #  * We prevent any options that might result in unwanted access
+    #  * Needs to be one big line, sorry.
+    rsyncCmd = ''command="rsync --config=${rsyncdConf} --server --daemon .",no-agent-forwarding,no-port-forwarding,no-user-rc,no-X11-forwarding,no-pty'';
+  in {
+    shell = pkgs.bash;
+    openssh.authorizedKeys.keys = map (x: rsyncCmd + " " + x) (builtins.concatLists (builtins.attrValues sshKeys));
   };
 
   programs.mtr.enable = true;

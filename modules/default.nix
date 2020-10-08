@@ -42,7 +42,15 @@ in
 
   nix.autoOptimiseStore = true; # autodeduplicate files in store
 
-  nix.trustedUsers = [ "chris" ];
+  nix.binaryCaches = [
+    "https://cache.nixos.org"
+    "https://mkaito.cachix.org"
+  ];
+
+  nix.binaryCachePublicKeys = [
+    "mkaito.cachix.org-1:ZBzZsgt5hpnsoAuMx3EkbVE6eSyF59L3q4PlG8FnBro="
+  ];
+
 
   nixpkgs.overlays = [(import <mkaito/pkgs>)];
 
@@ -88,6 +96,11 @@ in
   users.users = (lib.mapAttrs expandUser (import <mkaito/keys/ssh.nix>)) //
   {
     root = { openssh.authorizedKeys.keys = (import <mkaito/keys/ssh.nix>).chris; };
+  };
+
+  security.acme = {
+    email = "chris@mkaito.net";
+    acceptTerms = true;
   };
 
   nixpkgs.config.allowUnfree = true;

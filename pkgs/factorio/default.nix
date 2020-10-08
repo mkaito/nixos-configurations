@@ -52,12 +52,12 @@ let
   binDists = {
     x86_64-linux = let bdist = bdistForArch { inUrl = "linux64"; inTar = "x64"; }; in {
       alpha = {
-        stable        = bdist { sha256 = "0b4hbpdcrh5hgip9q5dkmw22p66lcdhnr0kmb0w5dw6yi7fnxxh0"; version = "0.16.51"; withAuth = true; };
-        experimental  = bdist { sha256 = "07v44za1wb9x926wvqi5p0agixav2xgp8iyvkaybhn6fjnq6pqi5"; version = "0.17.36"; withAuth = true; };
+        stable        = bdist { sha256 = "1a129iwd3ysh015xh0lpla0s9570aks9gdcl1fckrgs6xkys5r47"; version = "1.0.0"; withAuth = true; };
+        experimental  = bdist { sha256 = "0lfg5s20vc2n1yim21phd6qn3nc2ccfl17v7kiflizqsmk8flfnk"; version = "1.0.0"; withAuth = true; };
       };
       headless = {
-        stable        = bdist { sha256 = "0zrnpg2js0ysvx9y50h3gajldk16mv02dvrwnkazh5kzr1d9zc3c"; version = "0.16.51"; };
-        experimental  = bdist { sha256 = "1ln3hig2qd2wwfz49hivcjz4ma93r8i5yrzg6knz7100gqbm8y9f"; version = "0.17.45"; };
+        stable        = bdist { sha256 = "0r0lplns8nxna2viv8qyx9mp4cckdvx6k20w2g2fwnj3jjmf3nc1"; version = "1.0.0"; };
+        experimental  = bdist { sha256 = "0r0lplns8nxna2viv8qyx9mp4cckdvx6k20w2g2fwnj3jjmf3nc1"; version = "1.0.0"; };
       };
       demo = {
         stable        = bdist { sha256 = "0zf61z8937yd8pyrjrqdjgd0rjl7snwrm3xw86vv7s7p835san6a"; version = "0.16.51"; };

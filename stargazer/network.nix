@@ -1,23 +1,24 @@
 {
-  networking = {
-    usePredictableInterfaceNames = false;
-    nameservers = [ "8.8.8.8" "8.8.4.4" ];
-    hostname = "stargazer";
-    domain = "mkaito.net";
-  };
+  # Network (Hetzner uses static IP assignments, and we don't use DHCP here)
+  networking.useDHCP = false;
+  networking.interfaces."enp35s0".ipv4.addresses = [
+    {
+      address = "135.181.74.221";
+      prefixLength = 24;
+    }
+  ];
+  networking.interfaces."enp35s0".ipv6.addresses = [
+    {
+      address = "2a01:4f9:4b:12e2::1";
+      prefixLength = 64;
+    }
+  ];
 
-  systemd.network = {
-    enable = true;
-    networks."eth0".extraConfig = ''
-      [Match]
-      Name = eth0
-      [Network]
-      # Add your own assigned ipv6 subnet here here!
-      Address =  2a01:4f9:4b:12e2::/64
-      Gateway = fe80::1
-      # optionally you can do the same for ipv4 and disable DHCP (networking.dhcpcd.enable = false;)
-      # Address =  144.x.x.x/26
-      # Gateway = 144.x.x.1
-    '';
+  networking = {
+    nameservers = [ "8.8.8.8" "8.8.4.4" ];
+    hostName = "stargazer";
+    domain = "mkaito.net";
+    defaultGateway = "135.181.74.193";
+    defaultGateway6 = { address = "fe80::1"; interface = "enp35s0"; };
   };
 }

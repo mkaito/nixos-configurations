@@ -1,7 +1,7 @@
 {config, pkgs, lib, ...}:
 with lib;
 let
-  sshKeys = import <mkaito/keys/ssh.nix>;
+  sshKeys = import ./../keys/ssh.nix;
 
   wheel = [ "chris" ];
   expandUser = _name: keys: {
@@ -20,8 +20,7 @@ in {
   };
 
   users.mutableUsers = false;
-  users.users = (lib.mapAttrs expandUser sshKeys) //
-  {
+  users.users = lib.recursiveUpdate (lib.mapAttrs expandUser sshKeys) {
     root = {
       hashedPassword = "$6$lTBGqUqKYw$sBQXsEfL5FqwYbJlyejWRoagNUjoALM6VCtz7qI6veS.lIluw9cPx8NDmoinWFzS.g8WBuZCQZxs8NTmns/G4/";
       openssh.authorizedKeys.keys = sshKeys.chris ++
@@ -31,5 +30,22 @@ in {
     };
 
     chris.hashedPassword = "$6$5cT0x8HjQq$CmQt274.cqvOlJM/9M1qTBSlcH19G8iaxHNkFRqMZAUtuhHjDGSkfqb5LEd2C7fQtLpXnUSQWYcZu3qsbRJZr.";
+  };
+
+  services.fail2ban = {
+    enable = true;
+    # Ban repeat offenders longer:
+    jails.recidive = ''
+      filter = recidive
+      action = iptables-allports[name=recidive]
+      maxretry = 5
+      bantime = 604800 ; 1 week
+      findtime = 86400 ; 1 day
+    '';
+  };
+
+  security.acme = {
+    email = "chris@mkaito.net";
+    acceptTerms = true;
   };
 }

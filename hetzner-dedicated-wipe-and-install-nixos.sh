@@ -30,8 +30,7 @@
 #   being able to login without any authentication.
 # * The script reboots at the end.
 
-set -eu
-set -o pipefail
+set -euo pipefail
 
 set -x
 
@@ -157,11 +156,11 @@ echo "build-users-group =" > /etc/nix/nix.conf
 
 curl -L https://nixos.org/nix/install | sh
 set +u +x # sourcing this may refer to unset variables that we have no control over
-. $HOME/.nix-profile/etc/profile.d/nix.sh
+  # shellcheck disable=SC1090
+  . "$HOME/.nix-profile/etc/profile.d/nix.sh"
 set -u -x
 
 # Keep in sync with `system.stateVersion` set below!
-# nix-channel --add https://nixos.org/channels/nixos-20.03 nixpkgs
 nix-channel --add https://nixos.org/channels/nixos-20.03 nixpkgs
 nix-channel --update
 
@@ -177,12 +176,13 @@ RESCUE_INTERFACE=$(ip route get 8.8.8.8 | grep -Po '(?<=dev )(\S+)')
 # Find what its name will be under NixOS, which uses stable interface names.
 # See https://major.io/2015/08/21/understanding-systemds-predictable-network-device-names/#comment-545626
 # NICs for most Hetzner servers are not onboard, which is why we use
-# `ID_NET_NAME_PATH`otherwise it would be `ID_NET_NAME_ONBOARD`.
+# `ID_NET_NAME_PATH` otherwise it would be `ID_NET_NAME_ONBOARD`.
 INTERFACE_DEVICE_PATH=$(udevadm info -e | grep -Po "(?<=^P: )(.*${RESCUE_INTERFACE})")
 UDEVADM_PROPERTIES_FOR_INTERFACE=$(udevadm info --query=property "--path=$INTERFACE_DEVICE_PATH")
 NIXOS_INTERFACE=$(echo "$UDEVADM_PROPERTIES_FOR_INTERFACE" | grep -o -E 'ID_NET_NAME_PATH=\w+' | cut -d= -f2)
 echo "Determined NIXOS_INTERFACE as '$NIXOS_INTERFACE'"
 
+# Determine our IPv4
 IP_V4=$(ip route get 8.8.8.8 | grep -Po '(?<=src )(\S+)')
 echo "Determined IP_V4 as $IP_V4"
 
@@ -194,11 +194,13 @@ echo "Determined IP_V4 as $IP_V4"
 IP_V6="$(ip route get 2001:4860:4860:0:0:0:0:8888 | head -1 | cut -d' ' -f7 | cut -d: -f1-4)::1"
 echo "Determined IP_V6 as $IP_V6"
 
+# Determine the MAC of our primary interface so we can assign it to the bridge
+read -r MAC <"/sys/class/net/$RESCUE_INTERFACE/address"
+echo "Determined MAC as $MAC"
 
 # From https://stackoverflow.com/questions/1204629/how-do-i-get-the-default-gateway-in-linux-given-the-destination/15973156#15973156
-read _ _ DEFAULT_GATEWAY _ < <(ip route list match 0/0); echo "$DEFAULT_GATEWAY"
+read -r _ _ DEFAULT_GATEWAY _ < <(ip route list match 0/0); echo "$DEFAULT_GATEWAY"
 echo "Determined DEFAULT_GATEWAY as $DEFAULT_GATEWAY"
-
 
 # Generate `configuration.nix`. Note that we splice in shell variables.
 cat > /mnt/etc/nixos/configuration.nix <<EOF
@@ -220,9 +222,6 @@ cat > /mnt/etc/nixos/configuration.nix <<EOF
   };
 
 
-  networking.hostName = "stargazer";
-  networking.domain = "mkaito.net";
-
   # The mdadm RAID1s were created with 'mdadm --create ... --homehost=hetzner',
   # but the hostname for each machine may be different, and mdadm's HOMEHOST
   # setting defaults to '<system>' (using the system hostname).
@@ -240,27 +239,70 @@ cat > /mnt/etc/nixos/configuration.nix <<EOF
   environment.etc."mdadm.conf".text = ''
     HOMEHOST hetzner
   '';
+
   # The RAIDs are assembled in stage1, so we need to make the config
   # available there.
   boot.initrd.mdadmConf = config.environment.etc."mdadm.conf".text;
 
   # Network (Hetzner uses static IP assignments, and we don't use DHCP here)
   networking.useDHCP = false;
-  networking.interfaces."$NIXOS_INTERFACE".ipv4.addresses = [
-    {
-      address = "$IP_V4";
-      prefixLength = 24;
-    }
-  ];
-  networking.interfaces."$NIXOS_INTERFACE".ipv6.addresses = [
-    {
-      address = "$IP_V6";
-      prefixLength = 64;
-    }
-  ];
-  networking.defaultGateway = "$DEFAULT_GATEWAY";
-  networking.defaultGateway6 = { address = "fe80::1"; interface = "$NIXOS_INTERFACE"; };
-  networking.nameservers = [ "8.8.8.8" ];
+
+  # Bridged networking setup
+  networking.interfaces.br0 = {
+    macAddress= "$MAC";
+
+    ipv4 = {
+      addresses = [{
+        # Server main IPv4 address
+        address = "$IP_V4";
+        prefixLength = 24;
+      }];
+
+      routes = [
+        # Default IPv4 gateway route
+        {
+          address = "0.0.0.0";
+          prefixLength = 0;
+          via = "$DEFAULT_GATEWAY";
+        }
+      ];
+    };
+
+    ipv6 = {
+      addresses = [{
+        address = "$IP_V6";
+        prefixLength = 64;
+      }];
+
+      # Default IPv6 route
+      routes = [{
+        address = "::";
+        prefixLength = 0;
+        via = "fe80::1";
+      }];
+    };
+  };
+
+  networking = {
+    nameservers = [ "8.8.8.8" "8.8.4.4" ];
+    hostName = "hetzner";
+
+    # Enslave the main NIC
+    bridges.br0.interfaces = [ "$NIXOS_INTERFACE" ];
+  };
+
+  # Kernel options for bridge routing
+  boot.kernel.sysctl = {
+    "net.ipv6.conf.all.forwarding" = "1";
+    "net.ipv4.ip_forward" = "1";
+
+    # Disable netfilter for bridges, for performance and security
+    # Note that this means bridge-routed frames do not go through iptables
+    # https://bugzilla.redhat.com/show_bug.cgi?id=512206#c0
+    "net.bridge.bridge-nf-call-ip6tables" = "0";
+    "net.bridge.bridge-nf-call-iptables" = "0";
+    "net.bridge.bridge-nf-call-arptables" = "0";
+  };
 
   # Initial empty root password for easy login:
   users.users.root.initialHashedPassword = "";
@@ -277,12 +319,11 @@ cat > /mnt/etc/nixos/configuration.nix <<EOF
   # servers. You should change this only after NixOS release notes say you
   # should.
   system.stateVersion = "20.03"; # Did you read the comment?
-
 }
 EOF
 
 # Install NixOS
-PATH="$PATH" NIX_PATH="$NIX_PATH" `which nixos-install` --no-root-passwd --root /mnt --max-jobs 24
+PATH="$PATH" NIX_PATH="$NIX_PATH" "$( command -v nixos-install )" --no-root-passwd --root /mnt --max-jobs "$(nproc)"
 
 umount /mnt
 

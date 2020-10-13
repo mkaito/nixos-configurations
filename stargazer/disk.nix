@@ -26,7 +26,7 @@
   boot.initrd.mdadmConf = config.environment.etc."mdadm.conf".text;
 
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/06a30de2-cd55-44f1-8074-8304cd10432e";
+    device = "/dev/vg0/root0";
     fsType = "ext4";
   };
 }

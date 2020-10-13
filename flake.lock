@@ -10,11 +10,11 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1602351734,
-        "narHash": "sha256-6CRExsrsxoDaeRw9zK4cUW2NbA0ETKumXTiiIAw7t84=",
+        "lastModified": 1602455038,
+        "narHash": "sha256-JU+RPD7UFV5CvQBhndr3B6XHvtCTm1d02DhfwPt2Lws=",
         "owner": "serokell",
         "repo": "deploy-rs",
-        "rev": "867438bfc011e63b633b9d6fa2b0edb3367ea253",
+        "rev": "b2326d8694465718024e63c691fe9920c416489e",
         "type": "github"
       },
       "original": {
@@ -46,11 +46,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1597138680,
-        "narHash": "sha256-3pDN/W17wjVDbrkgo60xQSb24+QAPQ7ulsUq5atNni0=",
+        "lastModified": 1602173141,
+        "narHash": "sha256-m6wU6lP0wf2OMw3KtJqn27ITtg29+ftciGHicLiVSGE=",
         "owner": "nmattia",
         "repo": "naersk",
-        "rev": "529e910a3f423a8211f8739290014b754b2555b6",
+        "rev": "22b96210b2433228d42bce460f3befbdcfde7520",
         "type": "github"
       },
       "original": {
@@ -84,11 +84,11 @@
     },
     "utils": {
       "locked": {
-        "lastModified": 1600209923,
-        "narHash": "sha256-zoOWauTliFEjI++esk6Jzk7QO5EKpddWXQm9yQK24iM=",
+        "lastModified": 1601282935,
+        "narHash": "sha256-WQAFV6sGGQxrRs3a+/Yj9xUYvhTpukQJIcMbIi7LCJ4=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "3cd06d3c1df6879c9e41cb2c33113df10566c760",
+        "rev": "588973065fce51f4763287f0fda87a174d78bf48",
         "type": "github"
       },
       "original": {

@@ -3,10 +3,13 @@ with lib;
 let
   sshKeys = import ./../keys/ssh.nix;
 
-  wheel = [ "chris" ];
-  expandUser = _name: keys: {
+  expandUser = _name: keys: let
+    wheel = [ "chris" "faore" ];
+    libvirt = [ "chris" "faore" ];
+  in {
     extraGroups =
       (lib.optionals (builtins.elem _name wheel) [ "wheel" ])
+      ++ (lib.optionals (builtins.elem _name libvirt) [ "libvirtd" ])
       ++ [ "systemd-journal" ];
     isNormalUser = true;
     openssh.authorizedKeys.keys = keys;
@@ -18,6 +21,8 @@ in {
     passwordAuthentication = false;
     gatewayPorts = "yes";
   };
+
+  security.sudo.wheelNeedsPassword = false;
 
   users.mutableUsers = false;
   users.users = lib.recursiveUpdate (lib.mapAttrs expandUser sshKeys) {

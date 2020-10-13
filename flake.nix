@@ -26,14 +26,19 @@
           system = rec {
             sshUser = "root";
             user = sshUser;
-            path =
-              inputs.deploy-rs.lib.x86_64-linux.setActivate
-                self.nixosConfigurations.stargazer.config.system.build.toplevel
-                  "$PROFILE/bin/switch-to-configuration switch";
+
+            ## deploy.sh
+            path = self.nixosConfigurations.stargazer.config.system.build.toplevel;
+            activate = "$PROFILE/bin/switch-to-configuration switch";
+
+            ## deploy-rs
+            # path = inputs.deploy-rs.lib.x86_64-linux.setActivate self.nixosConfigurations.stargazer.config.system.build.toplevel
+            #   "./bin/switch-to-configuration switch";
           };
         };
       };
 
-      checks = { "x86_64-linux" = { jsonSchema = inputs.deploy-rs.lib.x86_64-linux.checkSchema self.deploy; }; };
+      ## deploy-rs
+      # checks = { "x86_64-linux" = { checkSchema = inputs.deploy-rs.lib.x86_64-linux.checkSchema self.deploy; }; };
     };
 }

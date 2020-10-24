@@ -8,34 +8,49 @@ let
     };
   };
 in { pkgs, lib, ... }: {
-  systemd.services = lib.mapAttrs' (name: guest: lib.nameValuePair "qemu-guest-${name}" {
-    wantedBy = [ "multi-user.target" ];
-    script = ''
-      disks=/var/lib/guests/disks/
-      mkdir -p $disks
 
-      sock=/run/qemu-${name}.mon.sock
+  # Make libvirtd available on the system
+  virtualisation.libvirtd = {
+    enable = true;
+    qemuPackage = pkgs.qemu_kvm;
+  };
 
-      hda=$disks/${name}.img
-      if [[ ! -r $hda ]]; then
-        echo "Could not find valid guest image at $hda. Aborting."
-        exit 1
-      fi
+  boot.kernelModules = [ "kvm-amd" ];
 
-      ${pkgs.qemu_kvm}/bin/qemu-kvm -m ${guest.memory} -display vnc=${guest.vncDisplay} \
-        -monitor unix:$sock,server,nowait \
-        -netdev tap,id=net0,ifname=${guest.netDevice},script=no,downscript=no \
-        -device virtio-net-pci,netdev=net0,mac=${guest.mac} \
-        -usbdevice tablet \
-        -drive file=$hda,if=virtio,boot=on
-    '';
+  environment.systemPackages = with pkgs; [
+    virt-manager
+    cloud-utils
+  ];
 
-    preStop = ''
-      echo 'system_powerdown' | ${pkgs.socat}/bin/socat - UNIX-CONNECT:/run/qemu-${name}.mon.sock
-      sleep 10
-    '';
-  }) guests;
+  # Generate a systemd unit for each VM
+  # systemd.services = lib.mapAttrs' (name: guest: lib.nameValuePair "qemu-guest-${name}" {
+  #   wantedBy = [ "multi-user.target" ];
+  #   script = ''
+  #     disks=/var/lib/guests/disks/
+  #     mkdir -p $disks
 
-  networking.interfaces = lib.foldl (m: g: m // {${g} = {virtual=true; virtualType="tap";};}) {} (map (g: g.netDevice) (builtins.attrValues guests));
-  networking.bridges.br0.interfaces = map (g: g.netDevice) (builtins.attrValues guests);
+  #     sock=/run/qemu-${name}.mon.sock
+
+  #     hda=$disks/${name}.img
+  #     if [[ ! -r $hda ]]; then
+  #       echo "Could not find valid guest image at $hda. Aborting."
+  #       exit 1
+  #     fi
+
+  #     ${pkgs.qemu_kvm}/bin/qemu-kvm -m ${guest.memory} -display vnc=${guest.vncDisplay} \
+  #       -monitor unix:$sock,server,nowait \
+  #       -netdev tap,id=net0,ifname=${guest.netDevice},script=no,downscript=no \
+  #       -device virtio-net-pci,netdev=net0,mac=${guest.mac} \
+  #       -usbdevice tablet \
+  #       -drive file=$hda,if=virtio,boot=on
+  #   '';
+
+  #   preStop = ''
+  #     echo 'system_powerdown' | ${pkgs.socat}/bin/socat - UNIX-CONNECT:/run/qemu-${name}.mon.sock
+  #     sleep 10
+  #   '';
+  # }) guests;
+
+  # networking.interfaces = lib.foldl (m: g: m // {${g} = {virtual=true; virtualType="tap";};}) {} (map (g: g.netDevice) (builtins.attrValues guests));
+  # networking.bridges.br0.interfaces = map (g: g.netDevice) (builtins.attrValues guests);
 }

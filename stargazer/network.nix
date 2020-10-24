@@ -1,5 +1,4 @@
 { pkgs, ... }: {
-  # Network (Hetzner uses static IP assignments, and we don't use DHCP here)
   networking.useDHCP = false;
 
   # Bridge setup
@@ -64,5 +63,9 @@
     "net.bridge.bridge-nf-call-ip6tables" = "0";
     "net.bridge.bridge-nf-call-iptables" = "0";
     "net.bridge.bridge-nf-call-arptables" = "0";
+  };
+
+  networking.firewall = {
+    logRefusedConnections = false;
   };
 }

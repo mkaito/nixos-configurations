@@ -4,7 +4,6 @@
   ];
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" ];
-  boot.kernelModules = [ "kvm-amd" ];
 
   boot.loader = {
     systemd-boot.enable = false;
@@ -37,6 +36,13 @@
     "mkaito.cachix.org-1:ZBzZsgt5hpnsoAuMx3EkbVE6eSyF59L3q4PlG8FnBro="
   ];
 
+  nix = {
+    package = pkgs.nixUnstable;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+  };
+
   documentation.nixos.enable = false;
 
   programs.zsh.enable = true;
@@ -52,7 +58,6 @@
     iptables
     ldns
     lsof
-    mosh
     mtr
     ncdu
     ripgrep
@@ -66,6 +71,7 @@
     tmux
     tree
     vim
+    wget
   ];
 
   system.stateVersion = "20.09";

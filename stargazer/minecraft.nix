@@ -1,8 +1,8 @@
 {pkgs, config, lib, ...}:
 let
   sshKeys = import ./../keys/ssh.nix;
-in
-{
+  stateDir = "/var/lib/minecraft";
+in {
 
   networking.firewall.allowedUDPPorts = [ 25565 ];
   networking.firewall.allowedTCPPorts = [ 25565 25575 25565 ];
@@ -14,12 +14,13 @@ in
 
     path = with pkgs; [ jdk8.jre bash ];
     serviceConfig = {
-      ExecStart = lib.mkForce "${config.services.minecraft-server.dataDir}/start.sh";
+      ExecStart = lib.mkForce "${stateDir}/start.sh";
       Restart = "always";
       User = "minecraft";
-      WorkingDirectory = "/var/lib/minecraft";
+      WorkingDirectory = stateDir;
     };
 
+    # Ensure EULA is accepted
     preStart = let
       eulaFile = builtins.toFile "eula.txt" ''
         # eula.txt managed by NixOS Configuration
@@ -40,11 +41,11 @@ in
     #  * We can't set gid, uid, because we're not root, but we don't need to
     #    either.
     rsyncdConf = pkgs.writeText "rsyncd-minecraft.conf" ''
-      log file = ${config.services.minecraft-server.dataDir}/rsync.log
+      log file = ${stateDir}/rsync.log
       [state]
         use chroot = false
-        comment = Minecraft state
-        path = /var/lib/minecraft
+        comment = Minecraft server state
+        path = ${stateDir}
         read only = false
     '';
 
@@ -57,7 +58,7 @@ in
     description = "Minecraft server service user";
     createHome      = true;
     uid             = config.ids.uids.minecraft;
-    home            = "/var/lib/minecraft";
+    home            = stateDir;
 
     shell = pkgs.bash;
     openssh.authorizedKeys.keys = map (x: rsyncCmd + " " + x) (builtins.concatLists (builtins.attrValues sshKeys));

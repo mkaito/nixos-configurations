@@ -12,26 +12,27 @@
   outputs = { self, nixpkgs, ... }@inputs:
     let
       inherit (nixpkgs) lib;
-    in {
-      nixosConfigurations.stargazer = lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-        system = "x86_64-linux";
-        modules = [ ./stargazer/default.nix ];
-      };
+    in
+      {
+        nixosConfigurations.stargazer = lib.nixosSystem {
+          specialArgs = { inherit inputs; };
+          system = "x86_64-linux";
+          modules = [ ./stargazer/default.nix ];
+        };
 
-      deploy.nodes.stargazer = {
-        hostname = "stargazer.mkaito.net";
-        fastConnection = true;
-        profiles = {
-          system = rec {
-            sshUser = "root";
-            user = sshUser;
-            path = inputs.deploy-rs.lib.x86_64-linux.setActivate self.nixosConfigurations.stargazer.config.system.build.toplevel
-              "./bin/switch-to-configuration switch";
+        deploy.nodes.stargazer = {
+          hostname = "stargazer.mkaito.net";
+          fastConnection = true;
+          profiles = {
+            system = rec {
+              sshUser = "root";
+              user = sshUser;
+              path = inputs.deploy-rs.lib.x86_64-linux.setActivate self.nixosConfigurations.stargazer.config.system.build.toplevel
+                "./bin/switch-to-configuration switch";
+            };
           };
         };
-      };
 
-      checks = { "x86_64-linux" = { checkSchema = inputs.deploy-rs.lib.x86_64-linux.checkSchema self.deploy; }; };
-    };
+        checks = { "x86_64-linux" = { checkSchema = inputs.deploy-rs.lib.x86_64-linux.checkSchema self.deploy; }; };
+      };
 }

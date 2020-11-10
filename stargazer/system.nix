@@ -42,6 +42,7 @@
     package = pkgs.nixUnstable;
     extraOptions = ''
       experimental-features = nix-command flakes
+      secret-key-files = /root/cache-priv-key.pem
     '';
   };
 

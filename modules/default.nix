@@ -9,6 +9,7 @@ in
 {
   imports = [
     ./services/factorio
+    ./services/minecraft-server
     <shaibot/modules/services/shaibot>
   ];
 

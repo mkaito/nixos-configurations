@@ -2,24 +2,34 @@
   description = "Stargazer server configuration";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nix.url = "github:NixOS/nix";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
+    flake-utils.url = "github:numtide/flake-utils";
+    flake-compat = {
+      url = "github:edolstra/flake-compat";
+      flake = false;
+    };
+
     deploy-rs = {
       url = "github:serokell/deploy-rs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, ... }@inputs:
-    let
-      inherit (nixpkgs) lib;
-    in
-      {
-        nixosConfigurations.stargazer = lib.nixosSystem {
+  outputs = { self, nixpkgs, flake-utils, deploy-rs, ... }@inputs:
+  let
+    inherit (nixpkgs.lib) foldl' recursiveUpdate nixosSystem mapAttrs;
+  in
+    foldl' recursiveUpdate {} [
+      # Pure outputs
+       {
+        nixosConfigurations.stargazer = nixosSystem {
           specialArgs = { inherit inputs; };
           system = "x86_64-linux";
           modules = [ ./stargazer/default.nix ];
         };
 
+        # Deployment expressions
         deploy.nodes.stargazer = {
           hostname = "stargazer.mkaito.net";
           fastConnection = true;
@@ -27,12 +37,27 @@
             system = rec {
               sshUser = "root";
               user = sshUser;
-              path = inputs.deploy-rs.lib.x86_64-linux.setActivate self.nixosConfigurations.stargazer.config.system.build.toplevel
-                "./bin/switch-to-configuration switch";
+              path = deploy-rs.lib.x86_64-linux.activate.nixos
+                self.nixosConfigurations.stargazer.config.system.build.toplevel;
             };
           };
         };
 
-        checks = { "x86_64-linux" = { checkSchema = inputs.deploy-rs.lib.x86_64-linux.checkSchema self.deploy; }; };
-      };
+        # Verify schema of .#deploy
+        checks = mapAttrs (_: lib: lib.deployChecks self.deploy) deploy-rs.lib;
+      }
+
+      # Per-system outputs
+      (flake-utils.lib.eachDefaultSystem (system:
+        let
+          overlay = import ./pkgs inputs;
+          pkgs = nixpkgs.legacyPackages.${system}.extend overlay;
+
+          inherit (pkgs) mkShell;
+        in {
+          devShell = mkShell {
+            buildInputs = with pkgs; [ nixUnstable ];
+          };
+        }))
+    ];
 }

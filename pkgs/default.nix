@@ -1,11 +1,11 @@
-super: self:
+inputs:
+
+final: prev:
 
 let
-  inherit (super) callPackage;
+  inherit (final) callPackage;
 in rec {
-  nixops-git = callPackage ./nixops-git {
-    inherit (self.python2Packages) libvirt;
-  };
+  nixUnstable = inputs.nix.defaultPackage.${final.system};
 
   factorio = callPackage ./factorio { releaseType = "alpha"; };
   factorio-experimental = factorio.override { releaseType = "alpha"; experimental = true; };

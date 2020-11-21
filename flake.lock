@@ -10,15 +10,16 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1605556445,
-        "narHash": "sha256-AbS4m6JDZcVfGRfUdDlcF7QxmQiM09+400maDYku1jQ=",
+        "lastModified": 1605959091,
+        "narHash": "sha256-b8JJdXaYYh1kSbtcIbFZz/ksxvNc9K2A+Vkb6BtzWSw=",
         "owner": "serokell",
         "repo": "deploy-rs",
-        "rev": "ef53906075343fdf9f3c81d4c72ff83281410695",
+        "rev": "1badc88dbcc0a46147d826c04a47342d98fd16fa",
         "type": "github"
       },
       "original": {
         "owner": "serokell",
+        "ref": "mkaito/fix-auto-rollback-flag",
         "repo": "deploy-rs",
         "type": "github"
       }

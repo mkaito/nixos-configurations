@@ -4,6 +4,7 @@
   inputs = {
     nix.url = "github:NixOS/nix";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
+
     flake-utils.url = "github:numtide/flake-utils";
     flake-compat = {
       url = "github:edolstra/flake-compat";
@@ -11,7 +12,10 @@
     };
 
     deploy-rs = {
-      url = "github:serokell/deploy-rs";
+      type = "github";
+      owner = "serokell";
+      repo = "deploy-rs";
+      ref = "mkaito/fix-auto-rollback-flag";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -19,20 +23,20 @@
   outputs = { self, nixpkgs, flake-utils, deploy-rs, ... }@inputs:
   let
     inherit (nixpkgs.lib) foldl' recursiveUpdate nixosSystem mapAttrs;
+    mkSystem = module: nixosSystem {
+      specialArgs = { inherit inputs; };
+      system = "x86_64-linux";
+      modules = [ module ];
+    };
   in
     foldl' recursiveUpdate {} [
       # Pure outputs
        {
-        nixosConfigurations.stargazer = nixosSystem {
-          specialArgs = { inherit inputs; };
-          system = "x86_64-linux";
-          modules = [ ./stargazer/default.nix ];
-        };
+        nixosConfigurations.stargazer = mkSystem ./stargazer;
 
         # Deployment expressions
         deploy.nodes.stargazer = {
           hostname = "stargazer.mkaito.net";
-          fastConnection = true;
           profiles = {
             system = rec {
               sshUser = "root";
@@ -56,7 +60,13 @@
           inherit (pkgs) mkShell;
         in {
           devShell = mkShell {
-            buildInputs = with pkgs; [ nixUnstable ];
+            buildInputs = with pkgs; [
+              # Make sure we have a fresh nix
+              nixUnstable
+
+              # deploy tool
+              deploy-rs.defaultPackage.${system}
+            ];
           };
         }))
     ];

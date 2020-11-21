@@ -41,6 +41,12 @@ in {
     };
 
     chris.hashedPassword = "$6$5cT0x8HjQq$CmQt274.cqvOlJM/9M1qTBSlcH19G8iaxHNkFRqMZAUtuhHjDGSkfqb5LEd2C7fQtLpXnUSQWYcZu3qsbRJZr.";
+
+    # Allow nginx to access ACME certs
+    nginx = {
+      uid = config.ids.uids.nginx;
+      extraGroups = [ "acme" ];
+    };
   };
 
   services.fail2ban = {
@@ -58,5 +64,18 @@ in {
   security.acme = {
     email = "chris@mkaito.net";
     acceptTerms = true;
+
+    # Generate a certificate valid for mkaito.net and all its subdomains.
+    # Use DNS-01 challenge
+    certs."mkaito.net" = {
+      dnsProvider = "route53";
+      credentialsFile = "/root/lego.env";
+
+      # Note: A wildcard only covers one level of subdomains
+      extraDomainNames = [ "*.mkaito.net" "*.stargazer.mkaito.net" ];
+
+      # Tell nginx to reload the cert
+      postRun = "systemctl reload nginx || true";
+    };
   };
 }

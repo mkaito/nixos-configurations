@@ -3,7 +3,7 @@
 
   inputs = {
     nix.url = "github:NixOS/nix";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";
 
     flake-utils.url = "github:numtide/flake-utils";
     flake-compat = {
@@ -23,14 +23,17 @@
   outputs = { self, nixpkgs, flake-utils, deploy-rs, ... }@inputs:
   let
     inherit (nixpkgs.lib) foldl' recursiveUpdate nixosSystem mapAttrs;
+
+    # We only evaluate server configs in the context of the system architecture
+    # they are deployed to
+    system = "x86_64-linux";
     mkSystem = module: nixosSystem {
       specialArgs = { inherit inputs; };
-      system = "x86_64-linux";
+      inherit system;
       modules = [ module ];
     };
   in
     foldl' recursiveUpdate {} [
-      # Pure outputs
        {
         nixosConfigurations.stargazer = mkSystem ./stargazer;
 
@@ -41,7 +44,7 @@
             system = rec {
               sshUser = "root";
               user = sshUser;
-              path = deploy-rs.lib.x86_64-linux.activate.nixos
+              path = deploy-rs.lib.${system}.activate.nixos
                 self.nixosConfigurations.stargazer.config.system.build.toplevel;
             };
           };
@@ -51,7 +54,6 @@
         checks = mapAttrs (_: lib: lib.deployChecks self.deploy) deploy-rs.lib;
       }
 
-      # Per-system outputs
       (flake-utils.lib.eachDefaultSystem (system:
         let
           overlay = import ./pkgs inputs;

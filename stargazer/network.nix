@@ -6,25 +6,27 @@
     macAddress= "a8:a1:59:35:68:2d";
 
     ipv4 = {
-      addresses = [{
-        # Server main IPv4 address
-        address = "135.181.74.221";
-        prefixLength = 24;
-      }];
+      addresses = [
+        { # Server main IPv4 address
+          address = "135.181.74.221";
+          prefixLength = 24; }
+
+          # Do not claim the subnet addresses
+        # { # VM Subnet
+        #   address = "95.217.103.168";
+        #   prefixLength = 29; }
+      ];
 
       routes = [
-        # Default IPv4 gateway route
-        {
+        { # Default IPv4 gateway route
           address = "0.0.0.0";
           prefixLength = 0;
-          via = "135.181.74.193";
-        }
+          via = "135.181.74.193"; }
 
-        # VM Subnet
-        {
+        { # VM Subnet
           address = "95.217.103.168";
           prefixLength = 29;
-        }
+          options.scope = "link"; }
       ];
     };
 

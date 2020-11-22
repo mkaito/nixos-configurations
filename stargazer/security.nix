@@ -69,7 +69,7 @@ in {
     # Use DNS-01 challenge
     certs."mkaito.net" = {
       dnsProvider = "route53";
-      credentialsFile = "/root/lego.env";
+      credentialsFile = "/root/secrets/lego.env";
 
       # Note: A wildcard only covers one level of subdomains
       extraDomainNames = [ "*.mkaito.net" "*.stargazer.mkaito.net" ];

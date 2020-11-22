@@ -9,10 +9,13 @@
 
     # Services
     ./dust.nix
-    ./minecraft.nix
+    ./email.nix
+    ./gitolite.nix
     ./nginx.nix
     ./qemu.nix
+
+    # Games
     ./factorio.nix
-    ./gitolite.nix
+    ./minecraft.nix
   ];
 }

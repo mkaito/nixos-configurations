@@ -350,7 +350,25 @@
         "flake-compat": "flake-compat_4",
         "flake-utils": "flake-utils_2",
         "nix": "nix_2",
-        "nixpkgs": "nixpkgs_4"
+        "nixpkgs": "nixpkgs_4",
+        "snm": "snm"
+      }
+    },
+    "snm": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1605859582,
+        "narHash": "sha256-Vhq8PIw59mugmrPbF1bHcG94EfBilO1FPJYNKZRBZcY=",
+        "owner": "simple-nixos-mailserver",
+        "repo": "nixos-mailserver",
+        "rev": "c1eb866805f78d59c7384aaf75967cbf71ca1fed",
+        "type": "gitlab"
+      },
+      "original": {
+        "owner": "simple-nixos-mailserver",
+        "ref": "nixos-20.09",
+        "repo": "nixos-mailserver",
+        "type": "gitlab"
       }
     },
     "utils": {

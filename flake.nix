@@ -21,6 +21,10 @@
 
     # Services
     dust.url = "git+https://git.sr.ht/~mkaito/dust";
+    snm = {
+      url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-20.09";
+      flake = false;
+    };
   };
 
   outputs = { self, nixpkgs, flake-utils, deploy-rs, ... }@inputs:

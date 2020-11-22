@@ -6,14 +6,6 @@
   # Nginx module does not do this automatically
   networking.firewall.allowedTCPPorts = [ 80 443 ];
 
-  # Needed to serve files from ~/public
-  users.users.nginx.extraGroups = [ "users" ];
-
-  # Default "true" does not allow bind mounts
-  # Hide all folders in /home /root and /run/users _except_ the one specified
-  systemd.services.nginx.serviceConfig.ProtectHome = "tmpfs";
-  systemd.services.nginx.serviceConfig.BindReadOnlyPaths = "/home/chris/public";
-
   services.nginx = {
     enable = true;
 
@@ -35,6 +27,18 @@
       };
     };
   };
+
+  users.users.${config.services.nginx.user}.extraGroups = [
+    # Serve files from ~/public
+    "users"
+    # Access ACME certificates
+    "acme"
+  ];
+
+  # Default "true" does not allow bind mounts
+  # Hide all folders in /home /root and /run/users _except_ the one specified
+  systemd.services.nginx.serviceConfig.ProtectHome = "tmpfs";
+  systemd.services.nginx.serviceConfig.BindReadOnlyPaths = "/home/chris/public";
 
   # Delete any public files that are older than one year
   systemd.services.cleanup-public-shit = {

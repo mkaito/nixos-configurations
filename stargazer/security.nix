@@ -55,12 +55,6 @@ in {
     };
 
     chris.hashedPassword = "$6$5cT0x8HjQq$CmQt274.cqvOlJM/9M1qTBSlcH19G8iaxHNkFRqMZAUtuhHjDGSkfqb5LEd2C7fQtLpXnUSQWYcZu3qsbRJZr.";
-
-    # Allow nginx to access ACME certs
-    nginx = {
-      uid = config.ids.uids.nginx;
-      extraGroups = [ "acme" ];
-    };
   };
 
   services.fail2ban = {

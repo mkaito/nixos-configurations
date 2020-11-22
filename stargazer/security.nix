@@ -16,6 +16,9 @@ let
   };
 
 in {
+  # Defines the deploy user
+  imports = [ ./deploy.nix ];
+
   services.openssh = {
     enable = true;
     passwordAuthentication = false;
@@ -42,14 +45,6 @@ in {
     nginx = {
       uid = config.ids.uids.nginx;
       extraGroups = [ "acme" ];
-    };
-
-    # Deployment user
-    deploy = {
-      isSystemUser = true;
-      useDefaultShell = true;
-      openssh.authorizedKeys.keys =
-        ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMGdwmaXyjrewrD5Bc6zpEJfzi38FDR5kqUI2rqKNcG6"];
     };
   };
 

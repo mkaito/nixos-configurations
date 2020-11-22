@@ -61,7 +61,7 @@ function fac_service() {
 function usage() {
   cat <<-EOF
 		USAGE
-		fac [adalind|faore] [module] [action]
+		fac [stargazer|faore] [module] [action]
 
 		SYNOPSIS
 		This shell function helps you manage your factorio server by wrapping common actions.
@@ -82,14 +82,14 @@ function fac() {
   [[ ! -z "$DEBUG" ]] && set -x
 
   ## Define target host
-  targethost=adalind
+  targethost=stargazer
   case "$1" in
     faore)
       targethost=home.admt
       shift
       ;;
 
-    adalind|factorio)
+    stargazer|factorio)
       targethost="$1.mkaito.net"
       shift
       ;;

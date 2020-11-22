@@ -91,7 +91,7 @@ in
         '';
       };
       saveName = mkOption {
-        type = types.string;
+        type = types.str;
         default = "default";
         description = ''
           The name of the savegame that will be used by the server.

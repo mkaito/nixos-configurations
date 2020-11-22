@@ -10,5 +10,6 @@
     ./minecraft.nix
     ./nginx.nix
     ./qemu.nix
+    ./factorio.nix
   ];
 }

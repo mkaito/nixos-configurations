@@ -77,5 +77,7 @@
     wget
   ];
 
+  environment.variables.EDITOR = "vim";
+
   system.stateVersion = "20.09";
 }

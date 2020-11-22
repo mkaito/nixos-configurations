@@ -1,23 +1,10 @@
 { inputs, ... }:
 {
-  imports = [
-    "${inputs.dust}/nix/modules/services/dust"
-  ];
-
+  imports = [ inputs.dust.module ];
+  services.postgresql.ensureDatabases = [ "dust" ];
   services.dust = {
-    token = "NTk4OTg4ODA4NzQ2MzAzNTIw.XSe5ZQ.28tcGZ77EAmr05ddsrYj0CGzhtA";
     enable = true;
-    logLevel = "info,dust=trace";
-  };
-
-  services.postgresql = rec {
-    ensureDatabases = [ "dust" ];
-    ensureUsers =
-      map (db: {
-        name = db;
-        ensurePermissions = {
-          "DATABASE \"${db}\"" = "ALL";
-        };
-      }) ensureDatabases;
+    environmentFile = "/root/secrets/dust.env";
+    profilePath = "/nix/var/nix/profiles/per-user/deploy/dust";
   };
 }

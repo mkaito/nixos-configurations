@@ -8,6 +8,7 @@
     ./system.nix
 
     # Services
+    ./dust.nix
     ./minecraft.nix
     ./nginx.nix
     ./qemu.nix

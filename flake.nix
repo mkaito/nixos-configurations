@@ -18,6 +18,9 @@
       ref = "mkaito/fix-auto-rollback-flag";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Services
+    dust.url = "git+https://git.sr.ht/~mkaito/dust";
   };
 
   outputs = { self, nixpkgs, flake-utils, deploy-rs, ... }@inputs:

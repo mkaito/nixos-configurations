@@ -13,5 +13,6 @@
     ./nginx.nix
     ./qemu.nix
     ./factorio.nix
+    ./gitolite.nix
   ];
 }

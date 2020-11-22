@@ -31,7 +31,10 @@
     # they are deployed to
     system = "x86_64-linux";
     mkSystem = module: nixosSystem {
-      specialArgs = { inherit inputs; };
+      specialArgs = {
+        inherit inputs;
+        sshKeys = import ./keys/ssh.nix;
+      };
       inherit system;
       modules = [ module ];
     };

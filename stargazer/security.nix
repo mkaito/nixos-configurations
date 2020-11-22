@@ -1,8 +1,10 @@
-{config, pkgs, lib, ...}:
+{ config
+, pkgs
+, lib
+, sshKeys
+, ...}:
 with lib;
 let
-  sshKeys = import ./../keys/ssh.nix;
-
   expandUser = _name: keys: let
     wheel = [ "chris" "faore" ];
     libvirt = [ "chris" "faore" ];

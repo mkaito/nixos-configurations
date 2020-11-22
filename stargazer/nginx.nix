@@ -31,7 +31,7 @@
           root = "/home/chris/public";
           # These files don't ever change once written
           extraConfig = "expires max;";
-        }
+        };
       };
     };
   };
@@ -40,7 +40,7 @@
   systemd.services.cleanup-public-shit = {
     path = with pkgs; [ findutils ];
     script = ''
-      find /home/chris/public -mtime +365 -delete
+      find /home/chris/public -type f -mtime +365 -delete
     '';
     startAt = "weekly";
   };

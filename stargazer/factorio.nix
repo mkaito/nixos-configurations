@@ -1,6 +1,4 @@
-let
-  sshKeys = import ./../keys/ssh.nix;
-in
+{ sshKeys, ... }:
 {
   imports = [./../modules/services/factorio];
 

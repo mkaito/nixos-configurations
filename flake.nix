@@ -37,10 +37,11 @@
     mkSystem = module: nixosSystem {
       specialArgs = {
         inherit inputs;
-        sshKeys = import ./keys/ssh.nix;
+        sshKeys = import ./lib/ssh/users.nix;
       };
+
       inherit system;
-      modules = [ module ];
+      modules = [ module ./lib/ssh/hostkeys.nix ];
     };
   in
     foldl' recursiveUpdate {} [

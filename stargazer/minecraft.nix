@@ -1,6 +1,5 @@
-{pkgs, config, lib, ...}:
+{pkgs, config, lib, sshKeys, ...}:
 let
-  sshKeys = import ./../keys/ssh.nix;
   stateDir = "/var/lib/minecraft";
 in {
 

@@ -36,4 +36,7 @@ in {
     systemctl reload dovecot2
     systemctl reload postfix
   '';
+
+  # Backup all mail
+  services.borgbackup.jobs.backup.paths = [ "/var/vmail" ];
 }

@@ -19,4 +19,35 @@
     enable = true;
     bind = "127.0.0.1";
   };
+
+  # Ensure that we have a folder to dump PG backups into
+  systemd.tmpfiles.rules = [
+    # https://www.freedesktop.org/software/systemd/man/tmpfiles.d.html
+    "d /var/lib/backup 0700 -"
+  ];
+
+  services.borgbackup.jobs.backup = {
+    paths = [
+      # Postgres dumps
+      "/var/lib/backup"
+
+      # Redis snapshots
+      "/var/lib/redis"
+    ];
+
+    # Need to write here to dump databases
+    readWritePaths = [ "/var/lib/backup" ];
+
+    # Dump all databases to a file
+    preHook = ''
+      /run/wrappers/bin/sudo -u postgres \
+      ${config.services.postgresql.package}/bin/pg_dumpall \
+      > /var/lib/backup/postgres_dump_$(date -uIm).psql
+    '';
+
+    # Delete database dumps after backing up
+    postHook = ''
+      find /var/lib/backup -iname '*.psql' -delete
+    '';
+  };
 }

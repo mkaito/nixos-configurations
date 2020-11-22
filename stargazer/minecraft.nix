@@ -64,4 +64,8 @@ in {
     openssh.authorizedKeys.keys = map (x: rsyncCmd + " " + x) (builtins.concatLists (builtins.attrValues sshKeys));
   };
 
+  # Modded server is expected to have some kind of backup mod.
+  # This allows us to not worry about atomicity of files at any given point in
+  # time.
+  services.borgbackup.jobs.backup.paths = "/var/lib/minecraft/backups";
 }

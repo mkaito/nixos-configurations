@@ -31,10 +31,6 @@ in {
       hashedPassword = "$6$lTBGqUqKYw$sBQXsEfL5FqwYbJlyejWRoagNUjoALM6VCtz7qI6veS.lIluw9cPx8NDmoinWFzS.g8WBuZCQZxs8NTmns/G4/";
       openssh.authorizedKeys.keys = sshKeys.chris ++
         [
-          # Deployment key used on builds.sr.ht
-          #   secret: 04e2a5e7-5c88-45ad-a806-c5d0073343dc
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMGdwmaXyjrewrD5Bc6zpEJfzi38FDR5kqUI2rqKNcG6"
-
           # Remote builds
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKQu6N8OM7hU105dnLpfeRJqpglaoD515pUhwDafFHpK root@cryptbreaker"
         ];
@@ -46,6 +42,14 @@ in {
     nginx = {
       uid = config.ids.uids.nginx;
       extraGroups = [ "acme" ];
+    };
+
+    # Deployment user
+    deploy = {
+      isSystemUser = true;
+      useDefaultShell = true;
+      openssh.authorizedKeys.keys =
+        ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMGdwmaXyjrewrD5Bc6zpEJfzi38FDR5kqUI2rqKNcG6"];
     };
   };
 

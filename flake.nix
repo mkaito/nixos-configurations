@@ -46,7 +46,8 @@
   in
     foldl' recursiveUpdate {} [
        {
-        nixosConfigurations.stargazer = mkSystem ./stargazer;
+        nixosConfigurations.stargazer = mkSystem ./stargazer/hetzner.nix;
+        nixosConfigurations.stargazer-vm = mkSystem ./stargazer/vm.nix;
 
         # Deployment expressions
         deploy.nodes.stargazer = {

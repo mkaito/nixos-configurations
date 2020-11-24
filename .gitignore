@@ -2,5 +2,4 @@
 /.direnv
 /.direnv.*
 /gist
-packet.nix
-packet/
+*.qcow2

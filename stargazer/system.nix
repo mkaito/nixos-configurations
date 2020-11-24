@@ -1,22 +1,5 @@
-{ pkgs, lib, inputs, ... }: {
-  imports = [
-    "${inputs.nixpkgs}/nixos/modules/profiles/headless.nix"
-  ];
-
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" ];
-
-  boot.loader = {
-    systemd-boot.enable = false;
-
-    grub = {
-      enable = true;
-      devices = [ "/dev/nvme0n1" "/dev/nvme1n1" ];
-      efiSupport = false;
-    };
-  };
-
-  nix.maxJobs = lib.mkDefault 24;
-  powerManagement.cpuFreqGovernor = lib.mkDefault "ondemand";
+{ pkgs, lib, inputs, modulesPath, ... }: {
+  imports = [ "${modulesPath}/profiles/headless.nix" ];
 
   nix.gc = {
     automatic = true;

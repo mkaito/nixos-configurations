@@ -15,6 +15,6 @@
 
     # Games
     ./factorio.nix
-    ./minecraft.nix
+    ./minecraft-servers.nix
   ];
 }

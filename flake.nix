@@ -15,7 +15,7 @@
       type = "github";
       owner = "serokell";
       repo = "deploy-rs";
-      ref = "mkaito/fix-auto-rollback-flag";
+      ref = "master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -25,6 +25,8 @@
       url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-20.09";
       flake = false;
     };
+
+    minecraft-servers.url = "git+file:///home/chris/dev/nix/nixos-minecraft-servers";
   };
 
   outputs = { self, nixpkgs, flake-utils, deploy-rs, ... }@inputs:
@@ -45,7 +47,7 @@
     };
   in
     foldl' recursiveUpdate {} [
-       {
+      {
         nixosConfigurations.stargazer = mkSystem ./stargazer/hetzner.nix;
         nixosConfigurations.stargazer-vm = mkSystem ./stargazer/vm.nix;
 
@@ -57,7 +59,7 @@
               sshUser = "root";
               user = sshUser;
               path = deploy-rs.lib.${system}.activate.nixos
-                self.nixosConfigurations.stargazer.config.system.build.toplevel;
+                self.nixosConfigurations.stargazer;
             };
           };
         };

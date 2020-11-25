@@ -27,6 +27,13 @@ in {
     keyFile = "${cert.directory}/key.pem";
   };
 
+  # Increase memory limit
+  services.dovecot2.extraConfig = ''
+    service imap {
+      vsz_limit = 4G
+    }
+  '';
+
   # Allow Postfix and Dovecot to read ACME certificates
   users.users.${config.services.dovecot2.user}.extraGroups = [ "acme" ];
   users.users.${config.services.postfix.user}.extraGroups = [ "acme" ];

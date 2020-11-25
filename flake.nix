@@ -72,8 +72,6 @@
           server = self.nixosConfigurations.stargazer.config;
           instances = server.services.modded-minecraft-servers.instances;
           enabledInstances = filterAttrs (_: i: i.enable) instances;
-          ipv4 = "135.181.74.221";
-          ipv6 = "2a01:4f9:4b:12e2::2";
 
           a_records = flip mapAttrs' enabledInstances
             (n: v: nameValuePair "${n}_a" {
@@ -81,7 +79,7 @@
               name = ''${n}.mc.''${data.aws_route53_zone.mkaito_net.name}'';
               type = "A";
               ttl = "60";
-              records = [ipv4];
+              records = [''''${data.dns_a_record_set.stargazer.addrs[0]}''];
             });
           aaaa_records = flip mapAttrs' enabledInstances
             (n: v: nameValuePair "${n}_aaaa" {
@@ -89,7 +87,7 @@
               name = ''${n}.mc.''${data.aws_route53_zone.mkaito_net.name}'';
               type = "AAAA";
               ttl = "60";
-              records = [ipv6];
+              records = [''''${data.dns_aaaa_record_set.stargazer.addrs[0]}''];
             });
           srv_records = flip mapAttrs' enabledInstances
             (n: v: nameValuePair "${n}_srv" {
@@ -125,7 +123,7 @@
               deploy-rs.defaultPackage.${system}
 
               # Cloud resources
-              (terraform.withPlugins (p: with p; [ aws ]))
+              (terraform.withPlugins (p: with p; [ aws dns ]))
             ];
           };
         }))

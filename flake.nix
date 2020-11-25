@@ -72,14 +72,24 @@
           server = self.nixosConfigurations.stargazer.config;
           instances = server.services.modded-minecraft-servers.instances;
           enabledInstances = filterAttrs (_: i: i.enable) instances;
+          ipv4 = "135.181.74.221";
+          ipv6 = "2a01:4f9:4b:12e2::2";
 
-          cname_records = flip mapAttrs' enabledInstances
-            (n: v: nameValuePair "${n}_cname" {
+          a_records = flip mapAttrs' enabledInstances
+            (n: v: nameValuePair "${n}_a" {
               zone_id = ''''${data.aws_route53_zone.mkaito_net.zone_id}'';
               name = ''${n}.mc.''${data.aws_route53_zone.mkaito_net.name}'';
-              type = "CNAME";
+              type = "A";
               ttl = "60";
-              records = ["stargazer.mkaito.net"];
+              records = [ipv4];
+            });
+          aaaa_records = flip mapAttrs' enabledInstances
+            (n: v: nameValuePair "${n}_aaaa" {
+              zone_id = ''''${data.aws_route53_zone.mkaito_net.zone_id}'';
+              name = ''${n}.mc.''${data.aws_route53_zone.mkaito_net.name}'';
+              type = "AAAA";
+              ttl = "60";
+              records = [ipv6];
             });
           srv_records = flip mapAttrs' enabledInstances
             (n: v: nameValuePair "${n}_srv" {
@@ -91,7 +101,7 @@
             });
         in writeText "minecraft.tf.json" (toJSON {
           resource = {
-            aws_route53_record = cname_records // srv_records;
+            aws_route53_record = a_records // aaaa_records // srv_records;
           };
         });
 

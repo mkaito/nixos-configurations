@@ -3,6 +3,10 @@ let
   inherit (lib) filterAttrs attrValues elem flatten;
   rsyncSSHKeys =
     flatten (attrValues (filterAttrs (n: _: elem n ["chris" "faore"]) sshKeys));
+  defaults = {
+    white-list = true;
+    spawn-protection = 0;
+  };
 in {
   imports = [ inputs.minecraft-servers.module ];
   services.modded-minecraft-servers = {
@@ -13,8 +17,7 @@ in {
         enable = true;
         jvmMaxAllocation = "6G";
         jvmInitialAllocation = "2G";
-        serverConfig = {
-          white-list = true;
+        serverConfig = defaults // {
           motd = "Enigmatica 2: Expert Skyblock";
         };
       };
@@ -23,9 +26,8 @@ in {
         enable = true;
         jvmMaxAllocation = "6G";
         jvmInitialAllocation = "2G";
-        serverConfig = {
+        serverConfig = defaults // {
           server-port = 25566;
-          white-list = true;
           motd = "All The Mods 6";
         };
       };

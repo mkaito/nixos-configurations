@@ -64,6 +64,37 @@
           };
         };
 
+        terraform.dns = let
+          inherit (nixpkgs.legacyPackages.${system}) writeText;
+          inherit (builtins) toJSON;
+          inherit (nixpkgs.lib) filterAttrs mapAttrs' nameValuePair flip;
+
+          server = self.nixosConfigurations.stargazer.config;
+          instances = server.services.modded-minecraft-servers.instances;
+          enabledInstances = filterAttrs (_: i: i.enable) instances;
+
+          cname_records = flip mapAttrs' enabledInstances
+            (n: v: nameValuePair "${n}_cname" {
+              zone_id = ''''${data.aws_route53_zone.mkaito_net.zone_id}'';
+              name = ''${n}.mc.''${data.aws_route53_zone.mkaito_net.name}'';
+              type = "CNAME";
+              ttl = "60";
+              records = ["stargazer.mkaito.net"];
+            });
+          srv_records = flip mapAttrs' enabledInstances
+            (n: v: nameValuePair "${n}_srv" {
+              zone_id = ''''${data.aws_route53_zone.mkaito_net.zone_id}'';
+              name = ''_minecraft._tcp.${n}.mc.''${data.aws_route53_zone.mkaito_net.name}'';
+              type = "SRV";
+              ttl = "60";
+              records = [ ''0 5 ${toString v.serverConfig.server-port} ${n}.mc.''${data.aws_route53_zone.mkaito_net.name}'' ];
+            });
+        in writeText "minecraft.tf.json" (toJSON {
+          resource = {
+            aws_route53_record = cname_records // srv_records;
+          };
+        });
+
         # Verify schema of .#deploy
         checks = mapAttrs (_: lib: lib.deployChecks self.deploy) deploy-rs.lib;
       }
@@ -80,8 +111,11 @@
               # Make sure we have a fresh nix
               nixUnstable
 
-              # deploy tool
+              # NixOS deployment tool
               deploy-rs.defaultPackage.${system}
+
+              # Cloud resources
+              (terraform.withPlugins (p: with p; [ aws ]))
             ];
           };
         }))

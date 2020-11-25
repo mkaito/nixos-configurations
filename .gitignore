@@ -3,3 +3,7 @@
 /.direnv.*
 /gist
 *.qcow2
+
+/terraform/*.tfstate*
+/terraform/.terraform
+/terraform/*.tf.json

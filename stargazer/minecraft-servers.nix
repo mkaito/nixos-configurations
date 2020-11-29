@@ -28,7 +28,10 @@ in {
         jvmInitialAllocation = "8G";
         serverConfig = defaults // {
           server-port = 25566;
-          motd = "All The Mods 6";
+          motd = "All The Mods 6 - 1.3.3";
+
+          # Nether terrain gen can be very slow
+          max-tick-time = 15 * 60 * 1000;
         };
       };
     };

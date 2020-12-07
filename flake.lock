@@ -256,8 +256,11 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1606387189,
+        "lastModified": 1606684569,
         "narHash": "sha256-6+eTzXoSgwv3MonBZfdSHFy6pRfiYkdiWWBmztVS6ME=",
+        "ref": "master",
+        "rev": "de74a5dba6aa3a498ae6bb221bf8016b3b8a4475",
+        "revCount": 6,
         "type": "git",
         "url": "file:///home/chris/dev/nix/nixos-minecraft-servers"
       },

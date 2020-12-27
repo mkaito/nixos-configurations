@@ -67,14 +67,16 @@ in {
       omnifactory = {
         inherit rsyncSSHKeys jvmOpts;
         enable = true;
-        jvmMaxAllocation = "8G";
-        jvmInitialAllocation = "4G";
+        jvmMaxAllocation = "4G";
+        jvmInitialAllocation = "2G";
         serverConfig = defaults // {
           server-port = 25568;
           motd = "Omnifactory dev snapshot #603";
+          # Factory good. Mobs bad.
+          difficulty = 0;
           extra-options = {
             # Default world, not lost cities
-            defaultworldgenerator-port = "d644e624-8d6e-11ea-928f-448a5bef204e]";
+            defaultworldgenerator-port = "d644e624-8d6e-11ea-928f-448a5bef204e";
           };
         };
       };

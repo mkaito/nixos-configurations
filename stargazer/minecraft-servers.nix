@@ -7,11 +7,35 @@ let
   # "Borrowed" from AllTheMods Discord
   jvmOpts = concatStringsSep " " [
     "-XX:+UseG1GC"
-    "-Dsun.rmi.dgc.server.gcInterval=2147483646"
+    "-XX:+ParallelRefProcEnabled"
+    "-XX:MaxGCPauseMillis=200"
     "-XX:+UnlockExperimentalVMOptions"
-    "-XX:G1NewSizePercent=20"
-    "-XX:MaxGCPauseMillis=50"
-    "-XX:G1HeapRegionSize=32M"
+    "-XX:+DisableExplicitGC"
+    "-XX:+AlwaysPreTouch"
+    "-XX:G1NewSizePercent=40"
+    "-XX:G1MaxNewSizePercent=50"
+    "-XX:G1HeapRegionSize=16M"
+    "-XX:G1ReservePercent=15"
+    "-XX:G1HeapWastePercent=5"
+    "-XX:G1MixedGCCountTarget=4"
+    "-XX:InitiatingHeapOccupancyPercent=20"
+    "-XX:G1MixedGCLiveThresholdPercent=90"
+    "-XX:G1RSetUpdatingPauseTimePercent=5"
+    "-XX:SurvivorRatio=32"
+    "-XX:+PerfDisableSharedMem"
+    "-XX:MaxTenuringThreshold=1"
+    "-Xloggc:gc.log"
+    "-verbose:gc"
+    "-XX:+PrintGCDetails"
+    "-XX:+PrintGCDateStamps"
+    "-XX:+PrintGCTimeStamps"
+    "-XX:+UseGCLogFileRotation"
+    "-XX:NumberOfGCLogFiles=5"
+    "-XX:GCLogFileSize=1M"
+    "-Dusing.aikars.flags=https://mcflags.emc.gs"
+    "-Daikars.new.flags=true"
+    "-Dfml.readTimeout=90"
+    "-Dfml.queryResult=confirm"
   ];
 
   defaults = {
@@ -48,12 +72,22 @@ in {
         jvmInitialAllocation = "8G";
         serverConfig = defaults // {
           server-port = 25566;
-          motd = "All The Mods 6 - 1.3.3 custom";
+          motd = "All The Mods 6 - 1.3.9 custom";
+        };
+      };
+      atm6b = {
+        inherit rsyncSSHKeys jvmOpts;
+        enable = true;
+        jvmMaxAllocation = "16G";
+        jvmInitialAllocation = "8G";
+        serverConfig = defaults // {
+          server-port = 25569;
+          motd = "All The Mods 6 - Persistent Testing Instance";
         };
       };
       interactions = {
         inherit rsyncSSHKeys jvmOpts;
-        enable = true;
+        enable = false;
         jvmMaxAllocation = "8G";
         jvmInitialAllocation = "4G";
         serverConfig = defaults // {
@@ -71,7 +105,7 @@ in {
         jvmInitialAllocation = "2G";
         serverConfig = defaults // {
           server-port = 25568;
-          motd = "Omnifactory dev snapshot #603";
+          motd = "Omnifactory dev snapshot #658";
           # Factory good. Mobs bad.
           difficulty = 0;
           extra-options = {

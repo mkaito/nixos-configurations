@@ -65,44 +65,11 @@ in {
           motd = "Enigmatica 2: Expert Skyblock";
         };
       };
-      atm6 = {
-        inherit rsyncSSHKeys jvmOpts;
-        enable = true;
-        jvmMaxAllocation = "16G";
-        jvmInitialAllocation = "8G";
-        serverConfig = defaults // {
-          server-port = 25566;
-          motd = "All The Mods 6 - 1.3.9 custom";
-        };
-      };
-      atm6b = {
-        inherit rsyncSSHKeys jvmOpts;
-        enable = true;
-        jvmMaxAllocation = "16G";
-        jvmInitialAllocation = "8G";
-        serverConfig = defaults // {
-          server-port = 25569;
-          motd = "All The Mods 6 - Persistent Testing Instance";
-        };
-      };
-      interactions = {
-        inherit rsyncSSHKeys jvmOpts;
-        enable = false;
-        jvmMaxAllocation = "8G";
-        jvmInitialAllocation = "4G";
-        serverConfig = defaults // {
-          server-port = 25567;
-          motd = "FTB Interactions 2.0.9";
-
-          # Fancy skyblock tutorial start
-          level-type = "voidworld";
-        };
-      };
       omnifactory = {
         inherit rsyncSSHKeys jvmOpts;
         enable = true;
         jvmMaxAllocation = "4G";
-        jvmInitialAllocation = "2G";
+        jvmInitialAllocation = "4G";
         serverConfig = defaults // {
           server-port = 25568;
           motd = "Omnifactory dev snapshot #658";

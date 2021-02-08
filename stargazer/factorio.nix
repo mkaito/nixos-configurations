@@ -8,6 +8,9 @@
     rsync = true;
     rsyncKeys = builtins.concatLists (builtins.attrValues sshKeys);
     autoStart = true;
+    game-name = "Derptorio 1.1 Vanilla+ Server";
+    description = "1.1 Trains & Chill";
+    extraSettings.admins = ["mkaito"];
   };
 
   # Backup game saves

@@ -1,4 +1,4 @@
-{ stdenv, callPackage, fetchurl, makeWrapper
+{ lib, stdenv, callPackage, fetchurl, makeWrapper
 , alsaLib, libX11, libXcursor, libXinerama, libXrandr, libXi, libGL
 , factorio-utils
 , releaseType
@@ -56,8 +56,8 @@ let
         experimental  = bdist { sha256 = "0lfg5s20vc2n1yim21phd6qn3nc2ccfl17v7kiflizqsmk8flfnk"; version = "1.0.0"; withAuth = true; };
       };
       headless = {
-        stable        = bdist { sha256 = "0r0lplns8nxna2viv8qyx9mp4cckdvx6k20w2g2fwnj3jjmf3nc1"; version = "1.0.0"; };
-        experimental  = bdist { sha256 = "0r0lplns8nxna2viv8qyx9mp4cckdvx6k20w2g2fwnj3jjmf3nc1"; version = "1.0.0"; };
+        stable        = bdist { sha256 = "0w0ir1dzx39vq1w09ikgw956q1ilq6n0cyi50arjhgcqcg44w1ks"; version = "1.1.19"; };
+        experimental  = bdist { sha256 = "0r0lplns8nxna2viv8qyx9mp4cckdvx6k20w2g2fwnj3jjmf3nc1"; version = "1.1.19"; };
       };
       demo = {
         stable        = bdist { sha256 = "0zf61z8937yd8pyrjrqdjgd0rjl7snwrm3xw86vv7s7p835san6a"; version = "0.16.51"; };
@@ -84,7 +84,7 @@ let
       inherit version arch;
       src =
         if withAuth then
-          (stdenv.lib.overrideDerivation
+          (lib.overrideDerivation
             (fetchurl {
               inherit name url sha256;
               curlOpts = [
@@ -165,8 +165,8 @@ let
         currently in late alpha.
       '';
       homepage = https://www.factorio.com/;
-      license = stdenv.lib.licenses.unfree;
-      maintainers = with stdenv.lib.maintainers; [ Baughn elitak ];
+      license = lib.licenses.unfree;
+      maintainers = with lib.maintainers; [ Baughn elitak ];
       platforms = [ "i686-linux" "x86_64-linux" ];
     };
   };
@@ -177,7 +177,7 @@ let
 
       buildInputs = [ makeWrapper ];
 
-      libPath = stdenv.lib.makeLibraryPath [
+      libPath = lib.makeLibraryPath [
         alsaLib
         libX11
         libXcursor

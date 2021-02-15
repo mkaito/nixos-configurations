@@ -56,8 +56,8 @@ let
         experimental  = bdist { sha256 = "0lfg5s20vc2n1yim21phd6qn3nc2ccfl17v7kiflizqsmk8flfnk"; version = "1.0.0"; withAuth = true; };
       };
       headless = {
-        stable        = bdist { sha256 = "0w0ir1dzx39vq1w09ikgw956q1ilq6n0cyi50arjhgcqcg44w1ks"; version = "1.1.19"; };
-        experimental  = bdist { sha256 = "0r0lplns8nxna2viv8qyx9mp4cckdvx6k20w2g2fwnj3jjmf3nc1"; version = "1.1.19"; };
+        stable        = bdist { sha256 = "038342z429cavdp2q3mjczlprw83nca030mjlipjppr43bzg9db0"; version = "1.1.21"; };
+        experimental  = bdist { sha256 = "038342z429cavdp2q3mjczlprw83nca030mjlipjppr43bzg9db0"; version = "1.1.21"; };
       };
       demo = {
         stable        = bdist { sha256 = "0zf61z8937yd8pyrjrqdjgd0rjl7snwrm3xw86vv7s7p835san6a"; version = "0.16.51"; };

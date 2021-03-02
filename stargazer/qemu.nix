@@ -4,7 +4,7 @@
   virtualisation.libvirtd = {
     enable = true;
     qemuPackage = pkgs.qemu_kvm;
-    allowedBridges = [ "br0" ];
+    allowedBridges = [ "virbr1" ];
   };
 
   boot.kernelModules = [ "kvm-amd" ];

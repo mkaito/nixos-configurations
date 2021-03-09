@@ -3,11 +3,13 @@
 
   nix.gc = {
     automatic = true;
-    # delete so there is 15GB free, and delete very old generations
-    options = ''--max-freed "$((15 * 1024**3 - 1024 * $(df -P -k /nix/store | tail -n 1 | ${pkgs.gawk}/bin/awk '{ print $4 }')))" --delete-older-than 30d'';
+    # Keep 500GB free, and delete very old generations
+    options = ''--max-freed "$((500 * 1024**3 - 1024 * $(df -P -k /nix/store | tail -n 1 | ${pkgs.gawk}/bin/awk '{ print $4 }')))" --delete-older-than 30d'';
   };
 
-  nix.autoOptimiseStore = true; # autodeduplicate files in store
+  # autodeduplicate files in store
+  nix.autoOptimiseStore = true;
+
   nixpkgs.config.allowUnfree = true;
 
   nix.binaryCaches = [

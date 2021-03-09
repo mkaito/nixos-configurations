@@ -11,13 +11,8 @@
       flake = false;
     };
 
-    deploy-rs = {
-      type = "github";
-      owner = "serokell";
-      repo = "deploy-rs";
-      ref = "master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    deploy-rs.url = "github:serokell/deploy-rs";
+    deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
 
     # Services
     dust.url = "git+https://git.sr.ht/~mkaito/dust";

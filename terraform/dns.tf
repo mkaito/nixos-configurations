@@ -30,3 +30,12 @@ resource "aws_route53_record" "vmx_stargazer_mkaito_net_ipv6" {
   ttl     = "60"
   records = ["2a01:4f9:4b:12e2::${each.key}"]
 }
+
+# VM CNAME
+resource "aws_route53_record" "space_engineers_cname" {
+  zone_id = data.aws_route53_zone.mkaito_net.zone_id
+  name    = "se.${data.aws_route53_zone.mkaito_net.name}"
+  type    = "CNAME"
+  ttl     = "60"
+  records = ["vm71.stargazer.mkaito.net"]
+}

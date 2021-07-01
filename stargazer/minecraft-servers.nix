@@ -1,8 +1,8 @@
-{ lib, inputs, sshKeys, ... }:
+{ pkgs, lib, inputs, sshKeys, ... }:
 let
   inherit (lib) filterAttrs attrValues elem flatten concatStringsSep;
   rsyncSSHKeys =
-    flatten (attrValues (filterAttrs (n: _: elem n ["chris"]) sshKeys));
+    flatten (attrValues (filterAttrs (n: _: elem n [ "chris" ]) sshKeys));
 
   # "Borrowed" from AllTheMods Discord
   jvmOpts = concatStringsSep " " [
@@ -24,18 +24,6 @@ let
     "-XX:SurvivorRatio=32"
     "-XX:+PerfDisableSharedMem"
     "-XX:MaxTenuringThreshold=1"
-    "-Xloggc:gc.log"
-    "-verbose:gc"
-    "-XX:+PrintGCDetails"
-    "-XX:+PrintGCDateStamps"
-    "-XX:+PrintGCTimeStamps"
-    "-XX:+UseGCLogFileRotation"
-    "-XX:NumberOfGCLogFiles=5"
-    "-XX:GCLogFileSize=1M"
-    "-Dusing.aikars.flags=https://mcflags.emc.gs"
-    "-Daikars.new.flags=true"
-    "-Dfml.readTimeout=90"
-    "-Dfml.queryResult=confirm"
   ];
 
   defaults = {
@@ -60,25 +48,59 @@ in {
         inherit rsyncSSHKeys jvmOpts;
         enable = true;
         jvmMaxAllocation = "8G";
-        jvmInitialAllocation = "4G";
+        jvmInitialAllocation = "2G";
         serverConfig = defaults // {
           motd = "Enigmatica 2: Expert Skyblock";
+          extra-options.level-type = "voidworld";
+        };
+      };
+      po3k = {
+        inherit rsyncSSHKeys jvmOpts;
+        enable = true;
+        jvmMaxAllocation = "8G";
+        jvmInitialAllocation = "2G";
+        serverConfig = defaults // {
+          server-port = 25571;
+          motd = "Project Ozone 3: Kappa Mode";
+          extra-options.level-type = "botania-skyblock";
         };
       };
       omnifactory = {
         inherit rsyncSSHKeys jvmOpts;
-        enable = true;
-        jvmMaxAllocation = "4G";
-        jvmInitialAllocation = "4G";
+        enable = false;
+        jvmMaxAllocation = "6G";
+        jvmInitialAllocation = "2G";
         serverConfig = defaults // {
           server-port = 25568;
           motd = "Omnifactory dev snapshot #658";
           # Factory good. Mobs bad.
           difficulty = 0;
-          extra-options = {
-            # Default world, not lost cities
-            defaultworldgenerator-port = "d644e624-8d6e-11ea-928f-448a5bef204e";
-          };
+
+          # Default world, not lost cities
+          extra-options.defaultworldgenerator-port = "d644e624-8d6e-11ea-928f-448a5bef204e";
+        };
+      };
+      skybees = {
+        inherit rsyncSSHKeys jvmOpts;
+        enable = false;
+        jvmPackage = pkgs.adoptopenjdk-jre-bin;
+        jvmMaxAllocation = "8G";
+        jvmInitialAllocation = "2G";
+        serverConfig = defaults // {
+          server-port = 25569;
+          motd = "Sky Bees 3.3.3";
+          extra-options.level-type = "skyblock:skyblock-type";
+        };
+      };
+      stacia = {
+        inherit rsyncSSHKeys jvmOpts;
+        enable = false;
+        jvmPackage = pkgs.adoptopenjdk-jre-bin;
+        jvmMaxAllocation = "8G";
+        jvmInitialAllocation = "4G";
+        serverConfig = defaults // {
+          server-port = 25570;
+          motd = "Stacia Expert 1.11.4";
         };
       };
     };

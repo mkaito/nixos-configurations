@@ -3,7 +3,7 @@
   imports = [./../modules/services/factorio];
 
   services.factorio = {
-    enable = true;
+    enable = false;
     whitelist = [ "mkaito" "faore" ];
     rsync = true;
     rsyncKeys = builtins.concatLists (builtins.attrValues sshKeys);

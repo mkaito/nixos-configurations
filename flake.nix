@@ -3,7 +3,7 @@
 
   inputs = {
     nix.url = "github:NixOS/nix";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.05-small";
 
     flake-utils.url = "github:numtide/flake-utils";
     flake-compat = {
@@ -17,11 +17,11 @@
     # Services
     dust.url = "git+https://git.sr.ht/~mkaito/dust";
     snm = {
-      url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-20.09";
+      url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-21.05";
       flake = false;
     };
 
-    minecraft-servers.url = "git+file:///home/chris/dev/nix/nixos-minecraft-servers";
+    minecraft-servers.url = "github:mkaito/nixos-modded-minecraft-servers";
   };
 
   outputs = { self, nixpkgs, flake-utils, deploy-rs, ... }@inputs:

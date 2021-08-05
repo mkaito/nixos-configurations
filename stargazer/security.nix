@@ -73,4 +73,9 @@ in {
       postRun = "systemctl reload nginx || true";
     };
   };
+
+  ## Stateful stationeers dedicated server
+  # TCP port is only for RCON and RCON-web
+  # networking.firewall.allowedTCPPorts = [ 27500 ];
+  networking.firewall.allowedUDPPorts = [ 27500 27015 ];
 }

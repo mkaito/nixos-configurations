@@ -21,6 +21,7 @@
         serverAliases = [ "files.mkaito.net" ];
         locations."/" = {
           root = "/home/chris/public";
+
           # These files don't ever change once written
           extraConfig = "expires max;";
         };
@@ -31,14 +32,16 @@
   users.users.${config.services.nginx.user}.extraGroups = [
     # Serve files from ~/public
     "users"
+
     # Access ACME certificates
     "acme"
   ];
 
-  # Default "true" does not allow bind mounts
-  # Hide all folders in /home /root and /run/users _except_ the one specified
-  systemd.services.nginx.serviceConfig.ProtectHome = "tmpfs";
-  systemd.services.nginx.serviceConfig.BindReadOnlyPaths = "/home/chris/public";
+  # Allow read-only access to home
+  systemd.services.nginx.serviceConfig.ProtectHome = "read-only";
+  system.activationScripts.traversableHome = ''
+    chmod g+x /home/chris
+  '';
 
   # Delete any public files that are older than one year
   systemd.services.cleanup-public-shit = {

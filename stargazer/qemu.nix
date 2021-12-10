@@ -3,7 +3,7 @@
   # Make libvirtd available on the system
   virtualisation.libvirtd = {
     enable = true;
-    qemuPackage = pkgs.qemu_kvm;
+    qemu.package = pkgs.qemu_kvm;
     allowedBridges = [ "virbr1" ];
   };
 

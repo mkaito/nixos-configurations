@@ -32,6 +32,9 @@ in {
     service imap {
       vsz_limit = 4G
     }
+    service quota-status {
+      vsz_limit = 4G
+    }
   '';
 
   # Allow Postfix and Dovecot to read ACME certificates

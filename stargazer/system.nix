@@ -60,6 +60,8 @@
     tree
     vim
     wget
+
+    blender
   ];
 
   environment.variables.EDITOR = "vim";

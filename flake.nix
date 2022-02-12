@@ -111,9 +111,6 @@
         in {
           devShell = mkShell {
             buildInputs = with pkgs; [
-              # Make sure we have a fresh nix
-              nixUnstable
-
               # NixOS deployment tool
               deploy-rs.defaultPackage.${system}
 

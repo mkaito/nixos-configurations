@@ -67,7 +67,7 @@ in {
       };
       omnifactory = {
         inherit rsyncSSHKeys jvmOpts;
-        enable = false;
+        enable = true;
         jvmMaxAllocation = "6G";
         jvmInitialAllocation = "2G";
         serverConfig = defaults // {

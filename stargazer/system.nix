@@ -1,4 +1,6 @@
-{ pkgs, lib, inputs, modulesPath, ... }: {
+{ pkgs, lib, inputs, modulesPath, ... }: let
+  blender3 = inputs.nixpkgs-blender.legacyPackages.${pkgs.system}.blender;
+in {
   imports = [ "${modulesPath}/profiles/headless.nix" ];
 
   nix.gc = {
@@ -61,7 +63,7 @@
     vim
     wget
 
-    blender
+    blender3
   ];
 
   environment.variables.EDITOR = "vim";

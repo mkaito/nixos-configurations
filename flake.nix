@@ -5,6 +5,10 @@
     nix.url = "github:NixOS/nix";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11-small";
 
+    # blender-3.0 PR branch
+    # https://github.com/NixOS/nixpkgs/pull/148550
+    nixpkgs-blender.url = "github:kanashimia/nixpkgs/blender-3.0";
+
     flake-utils.url = "github:numtide/flake-utils";
     flake-compat = {
       url = "github:edolstra/flake-compat";

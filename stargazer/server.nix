@@ -8,14 +8,15 @@
 
     # Services
     ./dust.nix
+    ./matrix.nix
     ./email.nix
     ./gitolite.nix
     ./nginx.nix
     ./qemu.nix
 
     # Games
-    ./factorio.nix
-    ./minecraft-servers.nix
+    # ./factorio.nix
+    # ./minecraft-servers.nix
 
     # Hacks
     ./missing-service-user-groups.nix

@@ -39,3 +39,46 @@ resource "aws_route53_record" "space_engineers_cname" {
   ttl     = "60"
   records = ["vm71.stargazer.mkaito.net"]
 }
+
+# Matrix
+resource "aws_route53_record" "matrix_stargazer_a" {
+  zone_id = data.aws_route53_zone.mkaito_net.zone_id
+  name    = "matrix.stargazer.${data.aws_route53_zone.mkaito_net.name}"
+  type    = "A"
+  ttl     = "60"
+  records = data.dns_a_record_set.stargazer.addrs
+}
+
+resource "aws_route53_record" "matrix_stargazer_aaaa" {
+  zone_id = data.aws_route53_zone.mkaito_net.zone_id
+  name    = "matrix.stargazer.${data.aws_route53_zone.mkaito_net.name}"
+  type    = "AAAA"
+  ttl     = "60"
+  records = data.dns_aaaa_record_set.stargazer.addrs
+}
+
+# matrix SRV
+resource "aws_route53_record" "matrix_srv" {
+  zone_id = data.aws_route53_zone.mkaito_net.zone_id
+  name    = "_matrix._tcp.${data.aws_route53_zone.mkaito_net.name}"
+  type    = "SRV"
+  ttl     = "60"
+  records = ["0 0 443 matrix.stargazer.mkaito.net."]
+}
+
+# TURN
+resource "aws_route53_record" "turn_a" {
+  zone_id = data.aws_route53_zone.mkaito_net.zone_id
+  name    = "turn.${data.aws_route53_zone.mkaito_net.name}"
+  type    = "A"
+  ttl     = "60"
+  records = data.dns_a_record_set.stargazer.addrs
+}
+
+resource "aws_route53_record" "turn_aaaa" {
+  zone_id = data.aws_route53_zone.mkaito_net.zone_id
+  name    = "turn.${data.aws_route53_zone.mkaito_net.name}"
+  type    = "AAAA"
+  ttl     = "60"
+  records = data.dns_aaaa_record_set.stargazer.addrs
+}

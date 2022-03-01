@@ -64,6 +64,7 @@ in {
     wget
 
     blender3
+    matrix-synapse
   ];
 
   environment.variables.EDITOR = "vim";

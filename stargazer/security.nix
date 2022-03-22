@@ -6,7 +6,7 @@
 with lib;
 let
   expandUser = _name: keys: let
-    wheel = [ "chris" "faore" ];
+    wheel = [ "chris" "faore" "yorick" ];
     libvirt = [ "chris" "faore" ];
   in {
     extraGroups =

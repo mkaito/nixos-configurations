@@ -46,7 +46,7 @@ in {
     instances = {
       e2es = {
         inherit rsyncSSHKeys jvmOpts;
-        enable = true;
+        enable = false;
         jvmMaxAllocation = "8G";
         jvmInitialAllocation = "2G";
         serverConfig = defaults // {
@@ -54,20 +54,20 @@ in {
           extra-options.level-type = "voidworld";
         };
       };
-      po3k = {
+      po3mythic = {
         inherit rsyncSSHKeys jvmOpts;
         enable = true;
-        jvmMaxAllocation = "8G";
-        jvmInitialAllocation = "2G";
+        jvmMaxAllocation = "10G";
+        jvmInitialAllocation = "4G";
         serverConfig = defaults // {
           server-port = 25571;
-          motd = "Project Ozone 3: Kappa Mode";
+          motd = "Project Ozone 3: Mythic Mode";
           extra-options.level-type = "botania-skyblock";
         };
       };
       omnifactory = {
         inherit rsyncSSHKeys jvmOpts;
-        enable = true;
+        enable = false;
         jvmMaxAllocation = "6G";
         jvmInitialAllocation = "2G";
         serverConfig = defaults // {
@@ -78,29 +78,6 @@ in {
 
           # Default world, not lost cities
           extra-options.defaultworldgenerator-port = "d644e624-8d6e-11ea-928f-448a5bef204e";
-        };
-      };
-      skybees = {
-        inherit rsyncSSHKeys jvmOpts;
-        enable = false;
-        jvmPackage = pkgs.adoptopenjdk-jre-bin;
-        jvmMaxAllocation = "8G";
-        jvmInitialAllocation = "2G";
-        serverConfig = defaults // {
-          server-port = 25569;
-          motd = "Sky Bees 3.3.3";
-          extra-options.level-type = "skyblock:skyblock-type";
-        };
-      };
-      stacia = {
-        inherit rsyncSSHKeys jvmOpts;
-        enable = false;
-        jvmPackage = pkgs.adoptopenjdk-jre-bin;
-        jvmMaxAllocation = "8G";
-        jvmInitialAllocation = "4G";
-        serverConfig = defaults // {
-          server-port = 25570;
-          motd = "Stacia Expert 1.11.4";
         };
       };
     };

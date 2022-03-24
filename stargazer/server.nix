@@ -16,7 +16,7 @@
 
     # Games
     # ./factorio.nix
-    # ./minecraft-servers.nix
+    ./minecraft-servers.nix
 
     # Hacks
     ./missing-service-user-groups.nix

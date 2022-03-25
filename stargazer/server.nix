@@ -13,6 +13,7 @@
     ./gitolite.nix
     ./nginx.nix
     ./qemu.nix
+    ./github-runner.nix
 
     # Games
     # ./factorio.nix

@@ -6,33 +6,36 @@
   services.matrix-synapse = {
     enable = true;
 
-    listeners = [{
-      bind_address = "0.0.0.0";
-      port = 13748;
+    settings = {
+      listeners = [{
+        bind_addresses = [ "0.0.0.0" ];
+        port = 13748;
 
-      resources = [
-        { compress = true;
-          names = [ "client" ]; }
-        { compress = false;
-          names = [ "federation" ]; }
+        resources = [
+          { compress = true;
+            names = [ "client" ]; }
+          { compress = false;
+            names = [ "federation" ]; }
+        ];
+
+        type = "http";
+        tls = false;
+        x_forwarded = true;
+
+      }];
+
+      server_name = "mkaito.net";
+      public_baseurl = "https://matrix.stargazer.mkaito.net";
+
+      # TURN public hosts
+      turn_uris = [
+        "turns:turn.mkaito.net?transport=udp"
+        "turns:turn.mkaito.net?transport=tcp"
+        "turn:turn.mkaito.net?transport=udp"
+        "turn:turn.mkaito.net?transport=tcp"
       ];
+    };
 
-      type = "http";
-      tls = false;
-      x_forwarded = true;
-
-    }];
-
-    public_baseurl = "https://matrix.stargazer.mkaito.net";
-    server_name = "mkaito.net";
-
-    # TURN public hosts
-    turn_uris = [
-      "turns:turn.mkaito.net?transport=udp"
-      "turns:turn.mkaito.net?transport=tcp"
-      "turn:turn.mkaito.net?transport=udp"
-      "turn:turn.mkaito.net?transport=tcp"
-    ];
 
     # TURN shared secret & registration shared secret
     extraConfigFiles = [ "/root/secrets/synapse-secrets.yaml" ];

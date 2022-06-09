@@ -3,7 +3,7 @@
 
   inputs = {
     # nix.url = "github:NixOS/nix";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11-small";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05-small";
 
     # blender-3.0 PR branch
     # https://github.com/NixOS/nixpkgs/pull/148550
@@ -21,7 +21,7 @@
     # Services
     dust.url = "git+https://git.sr.ht/~mkaito/dust";
     snm = {
-      url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-21.11";
+      url = "gitlab:simple-nixos-mailserver/nixos-mailserver";
       flake = false;
     };
 

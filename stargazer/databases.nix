@@ -15,11 +15,6 @@
       }) config.services.postgresql.ensureDatabases;
   };
 
-  services.redis = {
-    enable = true;
-    bind = "127.0.0.1";
-  };
-
   # Ensure that we have a folder to dump PG backups into
   systemd.tmpfiles.rules = [
     # https://www.freedesktop.org/software/systemd/man/tmpfiles.d.html
@@ -30,9 +25,6 @@
     paths = [
       # Postgres dumps
       "/var/lib/backup"
-
-      # Redis snapshots
-      "/var/lib/redis"
     ];
 
     # Need to write here to dump databases

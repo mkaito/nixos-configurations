@@ -57,7 +57,7 @@ in {
   };
 
   security.acme = {
-    email = "chris@mkaito.net";
+    defaults.email = "chris@mkaito.net";
     acceptTerms = true;
 
     # Generate a certificate valid for mkaito.net and all its subdomains.

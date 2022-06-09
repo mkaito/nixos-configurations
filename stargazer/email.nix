@@ -47,6 +47,18 @@ in {
     systemctl reload postfix
   '';
 
-  # Backup all mail
-  services.borgbackup.jobs.backup.paths = [ "/var/vmail" ];
+  services.borgbackup.jobs.backup.paths = [
+    # Mail store
+    "/var/vmail"
+
+    # Redis snapshots
+    "/var/lib/redis-rspamd"
+  ];
+
+  # Spam filter
+  services.redis.servers.rspamd = {
+    enable = true;
+    bind = "127.0.0.1";
+  };
+
 }

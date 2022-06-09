@@ -2,7 +2,7 @@
   description = "Stargazer server configuration";
 
   inputs = {
-    nix.url = "github:NixOS/nix";
+    # nix.url = "github:NixOS/nix";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11-small";
 
     # blender-3.0 PR branch
@@ -48,7 +48,7 @@
     foldl' recursiveUpdate {} [
       {
         nixosConfigurations.stargazer = mkSystem ./stargazer/hetzner.nix;
-        nixosConfigurations.stargazer-vm = mkSystem ./stargazer/vm.nix;
+        # nixosConfigurations.stargazer-vm = mkSystem ./stargazer/vm.nix;
 
         # Deployment expressions
         deploy.nodes.stargazer = {
@@ -113,7 +113,7 @@
 
           inherit (pkgs) mkShell;
         in {
-          devShell = mkShell {
+          devShells.default = mkShell {
             buildInputs = with pkgs; [
               # NixOS deployment tool
               deploy-rs.defaultPackage.${system}

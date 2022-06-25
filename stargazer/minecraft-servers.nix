@@ -2,7 +2,7 @@
 let
   inherit (lib) filterAttrs attrValues elem flatten concatStringsSep;
   rsyncSSHKeys =
-    flatten (attrValues (filterAttrs (n: _: elem n [ "chris" ]) sshKeys));
+    flatten (attrValues (filterAttrs (n: _: elem n [ "chris" "camina" ]) sshKeys));
 
   # "Borrowed" from AllTheMods Discord
   jvmOpts = concatStringsSep " " [
@@ -80,6 +80,17 @@ in {
           extra-options.defaultworldgenerator-port = "d644e624-8d6e-11ea-928f-448a5bef204e";
         };
       };
+        modhousemadhouse = {
+        inherit rsyncSSHKeys jvmOpts;
+        enable = true;
+        jvmMaxAllocation = "16G";
+        jvmInitialAllocation = "4G";
+        serverConfig = defaults // {
+          server-port = 25572;
+          motd = "I hope this works: please";
+        };
+      };
+      
     };
   };
 }

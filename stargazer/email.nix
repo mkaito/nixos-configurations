@@ -13,7 +13,7 @@ in {
 
     loginAccounts = {
       "chris@mkaito.net" = {
-        hashedPassword = "$6$XsKtXFVJAF$QjloeO/oFG.eEx9IR..CdBc2KCwpAOg/vHwrNpVWOuXiJ5TBhdNV01TVFt5pUtnmWws1P6TUYDJTSPYHX5QKK1";
+        hashedPasswordFile = "/root/secrets/email-hashed-password-mkaito";
         aliases = [
           "chris@mkaito.com"
           "me@mkaito.com"

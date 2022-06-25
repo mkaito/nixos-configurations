@@ -1,14 +1,21 @@
 ## Bucket for TF state storage
 resource "aws_s3_bucket" "tfstate" {
   bucket = "mkaito-tfstate"
-  acl    = "private"
-
-  versioning {
-    enabled = true
-  }
 
   lifecycle {
     prevent_destroy = true
+  }
+}
+
+resource "aws_s3_bucket_acl" "tfstate" {
+  bucket = aws_s3_bucket.tfstate.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_versioning" "tfstate" {
+  bucket = aws_s3_bucket.tfstate.id
+  versioning_configuration {
+    status = "Enabled"
   }
 }
 

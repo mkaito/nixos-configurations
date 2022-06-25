@@ -2,15 +2,15 @@
 # Manual edits may be lost in future updates.
 
 provider "registry.terraform.io/hashicorp/aws" {
-  version = "3.56.0"
+  version = "4.15.1"
   hashes = [
-    "h1:vyWwpPzFxAJR0RweBA3seplXD5QkoE9QT61/99QkdnI=",
+    "h1:xfJV4xW1aWe/PrAYn3cj6iQjymOatCqP4QKH75+CDW0=",
   ]
 }
 
 provider "registry.terraform.io/hashicorp/dns" {
-  version = "3.0.0"
+  version = "3.2.3"
   hashes = [
-    "h1:xtGVmsziUk0UzGPLBG7BXr4eVvwjR+6yGHUu7YVWACc=",
+    "h1:OID/I0+WD5W2sQckW+SXAFHWVbzmKJmqYb74Iyecvyo=",
   ]
 }

@@ -88,6 +88,8 @@ in {
         serverConfig = defaults // {
           server-port = 25572;
           motd = "I hope this works: please";
+          spawn-protection = 1;
+          extra-options.level-type = "biomesoplenty";
         };
       };
     };

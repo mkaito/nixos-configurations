@@ -80,7 +80,7 @@ in {
           extra-options.defaultworldgenerator-port = "d644e624-8d6e-11ea-928f-448a5bef204e";
         };
       };
-        modhousemadhouse = {
+      modhousemadhouse = {
         inherit rsyncSSHKeys jvmOpts;
         enable = true;
         jvmMaxAllocation = "16G";
@@ -90,7 +90,6 @@ in {
           motd = "I hope this works: please";
         };
       };
-      
     };
   };
 }

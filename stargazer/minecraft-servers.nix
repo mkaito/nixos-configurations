@@ -76,20 +76,26 @@ in {
           # Factory good. Mobs bad.
           difficulty = 0;
 
-          # Default world, not lost cities
+          # default world, not lost cities
           extra-options.defaultworldgenerator-port = "d644e624-8d6e-11ea-928f-448a5bef204e";
         };
       };
-      modhousemadhouse = {
+      aryxe6 = {
         inherit rsyncSSHKeys jvmOpts;
         enable = true;
-        jvmMaxAllocation = "16G";
-        jvmInitialAllocation = "4G";
+        jvmMaxAllocation = "18G";
+        jvmInitialAllocation = "6G";
         serverConfig = defaults // {
-          server-port = 25572;
-          motd = "I hope this works: please";
-          spawn-protection = 1;
-          extra-options.level-type = "biomesoplenty";
+          server-port = 25573;
+          motd = "Aryx Enigmatica 6: Terraforged";
+          spawn-protection = 64;
+          level-seed = "-7983745119197482167";
+          level-type = "terraforged";
+          generator-settings = "Enigmatica";
+
+          # Let the Discord bot handle it
+          # NB: Discord bot is broken
+          white-list = true;
         };
       };
     };

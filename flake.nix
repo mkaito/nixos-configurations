@@ -2,42 +2,43 @@
   description = "Stargazer server configuration";
 
   inputs = {
-    # nix.url = "github:NixOS/nix";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05-small";
+    nixpkgs.url = "nixpkgs/nixos-unstable-small";
+    # nixpkgs = {
+    #   type = "github";
+    #   owner = "mkaito";
+    #   repo = "nixpkgs";
+    #   ref = "mkaito/backport-github-runner";
+    # };
 
-    # blender-3.0 PR branch
-    # https://github.com/NixOS/nixpkgs/pull/148550
-    nixpkgs-blender.url = "github:kanashimia/nixpkgs/blender-3.0";
 
     flake-utils.url = "github:numtide/flake-utils";
-    flake-compat = {
-      url = "github:edolstra/flake-compat";
-      flake = false;
-    };
 
     deploy-rs.url = "github:serokell/deploy-rs";
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
 
     # Services
     dust.url = "git+https://git.sr.ht/~mkaito/dust";
+    dust.inputs.nixpkgs.follows = "nixpkgs";
+
     snm = {
       url = "gitlab:simple-nixos-mailserver/nixos-mailserver";
       flake = false;
     };
 
     minecraft-servers.url = "github:mkaito/nixos-modded-minecraft-servers";
+
+    vscode-server.url = "github:msteen/nixos-vscode-server";
   };
 
   outputs = { self, nixpkgs, flake-utils, deploy-rs, ... }@inputs:
   let
     inherit (nixpkgs.lib) foldl' recursiveUpdate nixosSystem mapAttrs;
 
-    # We only evaluate server configs in the context of the system architecture
-    # they are deployed to
+    # We only evaluate server configs in the context of the system architecture they are deployed to
     system = "x86_64-linux";
     mkSystem = module: nixosSystem {
       specialArgs = {
-        inherit inputs;
+        inherit inputs system;
         sshKeys = import ./lib/ssh/users.nix;
       };
 
@@ -48,7 +49,6 @@
     foldl' recursiveUpdate {} [
       {
         nixosConfigurations.stargazer = mkSystem ./stargazer/hetzner.nix;
-        # nixosConfigurations.stargazer-vm = mkSystem ./stargazer/vm.nix;
 
         # Deployment expressions
         deploy.nodes.stargazer = {

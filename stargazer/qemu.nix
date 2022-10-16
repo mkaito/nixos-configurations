@@ -9,6 +9,8 @@
 
   boot.kernelModules = [ "kvm-amd" ];
 
+  security.polkit.enable = true;
+
   environment.systemPackages = with pkgs; [
     virt-manager
     cloud-utils

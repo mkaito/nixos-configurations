@@ -41,6 +41,9 @@
     extraConfigFiles = [ "/root/secrets/synapse-secrets.yaml" ];
   };
 
+  # Yes, I know this is uhhhh less than great
+  systemd.services.matrix-synapse.serviceConfig.ProtectHome = lib.mkForce false;
+
   # Yes, this is horrible, I know.
   system.activationScripts.traversableRoot = ''
     chmod o+x /root

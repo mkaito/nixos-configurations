@@ -1,7 +1,8 @@
-{ pkgs, lib, inputs, modulesPath, ... }: let
-  blender3 = inputs.nixpkgs-blender.legacyPackages.${pkgs.system}.blender;
-in {
-  imports = [ "${modulesPath}/profiles/headless.nix" ];
+{ pkgs, lib, inputs, system, modulesPath, ... }:{
+  imports = [ 
+    "${modulesPath}/profiles/headless.nix"
+    inputs.vscode-server.nixosModule
+  ];
 
   nix.gc = {
     automatic = true;
@@ -17,21 +18,18 @@ in {
   nix.binaryCaches = [
     "https://cache.nixos.org"
     "https://mkaito.cachix.org"
-    "s3://serokell-private-cache?endpoint=s3.eu-central-1.wasabisys.com&profile=serokell-cache-read"
   ];
 
   nix.binaryCachePublicKeys = [
     "mkaito.cachix.org-1:ZBzZsgt5hpnsoAuMx3EkbVE6eSyF59L3q4PlG8FnBro="
-    "serokell-1:aIojg2Vxgv7MkzPJoftOO/I8HKX622sT+c0fjnZBLj0="
   ];
 
-  nix = {
-    package = pkgs.nixUnstable;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-      secret-key-files = /root/cache-priv-key.pem
-    '';
-  };
+  nix.extraOptions = ''
+    experimental-features = nix-command flakes
+    secret-key-files = /root/cache-priv-key.pem
+  '';
+
+  services.vscode-server.enable = true;
 
   documentation.nixos.enable = false;
 
@@ -40,9 +38,11 @@ in {
 
   environment.systemPackages = with pkgs; [
     binutils
+    direnv
     dnsutils
     fd
     gdb
+    gh
     git
     htop
     iptables
@@ -52,7 +52,7 @@ in {
     ncdu
     ripgrep
     rsync
-    rxvt_unicode.terminfo
+    rxvt-unicode-unwrapped.terminfo
     strace
     sysstat
     tcpdump
@@ -63,7 +63,6 @@ in {
     vim
     wget
 
-    blender3
     matrix-synapse
   ];
 

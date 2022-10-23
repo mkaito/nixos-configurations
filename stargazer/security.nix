@@ -6,7 +6,7 @@
 with lib;
 let
   expandUser = _name: keys: let
-    wheel = [ "chris" "faore" "yorick" ];
+    wheel = [ "chris" "faore" ];
     libvirt = [ "chris" "faore" ];
   in {
     extraGroups =
@@ -45,7 +45,7 @@ in {
   };
 
   services.fail2ban = {
-    enable = true;
+    enable = false;
     # Ban repeat offenders longer:
     jails.recidive = ''
       filter = recidive

@@ -13,12 +13,7 @@ in
         tokenFile = "/root/secrets/github-runner-token";
         url = "https://github.com/OnHaven";
 
-        extraLabels = [ "nixos" "docker" ];
-        extraPackages = with pkgs; [ docker ];
-
-        serviceOverrides = {
-          supplementaryGroups = [ "docker" ];
-        };
+        extraLabels = [ "nixos" ];
       };
     in
     genAttrs (map (i: "stargazer-nixos-shell-${toString i}") [ 1 2 3 4 ]) mkRunner;

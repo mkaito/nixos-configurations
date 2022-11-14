@@ -39,7 +39,8 @@ let
     # It just ain't modded minecraft without flying around
     allow-flight = true;
   };
-in {
+in
+{
   imports = [ inputs.minecraft-servers.module ];
   services.modded-minecraft-servers = {
     eula = true;
@@ -56,7 +57,7 @@ in {
       };
       po3mythic = {
         inherit rsyncSSHKeys jvmOpts;
-        enable = true;
+        enable = false;
         jvmMaxAllocation = "10G";
         jvmInitialAllocation = "4G";
         serverConfig = defaults // {
@@ -96,6 +97,22 @@ in {
           # Let the Discord bot handle it
           # NB: Discord bot is broken
           white-list = true;
+        };
+      };
+      sb3 = {
+        inherit rsyncSSHKeys;
+        jvmOpts = jvmOpts + " " + (concatStringsSep " " [
+          "-javaagent:log4jfix/Log4jPatcher-1.0.0.jar"
+          "@libraries/net/minecraftforge/forge/1.18.2-40.1.84/unix_args.txt"
+        ]);
+        # TODO: `jre` will inevitably refer to a different version at some point in the future
+        jvmPackage = pkgs.jre;
+        enable = true;
+        jvmMaxAllocation = "12G";
+        jvmInitialAllocation = "6G";
+        serverConfig = defaults // {
+          server-port = 25574;
+          motd = "Stoneblock 3";
         };
       };
     };

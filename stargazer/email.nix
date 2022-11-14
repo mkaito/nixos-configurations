@@ -2,8 +2,9 @@
 let
   megabytesToBytes = n: n * 1048576;
   cert = config.security.acme.certs."mkaito.net";
-in {
-  imports = [(import inputs.snm)];
+in
+{
+  imports = [ (import inputs.snm) ];
   mailserver = {
     enable = true;
     fqdn = "stargazer.mkaito.net";
@@ -18,6 +19,9 @@ in {
           "chris@mkaito.com"
           "me@mkaito.com"
         ];
+      };
+      "monitoring@mkaito.net" = {
+        hashedPasswordFile = "/root/secrets/email-hashed-password-monitoring";
       };
     };
 

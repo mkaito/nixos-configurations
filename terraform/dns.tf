@@ -82,3 +82,28 @@ resource "aws_route53_record" "turn_aaaa" {
   ttl     = "60"
   records = data.dns_aaaa_record_set.stargazer.addrs
 }
+
+# Prometheus & Grafana
+resource "aws_route53_record" "prometheus_cname" {
+  zone_id = data.aws_route53_zone.mkaito_net.zone_id
+  name    = "prometheus.${data.aws_route53_zone.mkaito_net.name}"
+  type    = "CNAME"
+  ttl     = "60"
+  records = ["stargazer.mkaito.net"]
+}
+
+resource "aws_route53_record" "grafana_cname" {
+  zone_id = data.aws_route53_zone.mkaito_net.zone_id
+  name    = "grafana.${data.aws_route53_zone.mkaito_net.name}"
+  type    = "CNAME"
+  ttl     = "60"
+  records = ["stargazer.mkaito.net"]
+}
+
+resource "aws_route53_record" "alertmanager_cname" {
+  zone_id = data.aws_route53_zone.mkaito_net.zone_id
+  name    = "alertmanager.${data.aws_route53_zone.mkaito_net.name}"
+  type    = "CNAME"
+  ttl     = "60"
+  records = ["stargazer.mkaito.net"]
+}

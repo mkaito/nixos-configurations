@@ -7,3 +7,5 @@
 /terraform/*.tfstate*
 /terraform/.terraform
 /terraform/*.tf.json
+/terraform/.terraform.lock.hcl
+

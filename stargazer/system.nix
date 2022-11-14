@@ -1,5 +1,5 @@
-{ pkgs, lib, inputs, system, modulesPath, ... }:{
-  imports = [ 
+{ pkgs, lib, inputs, system, modulesPath, ... }: {
+  imports = [
     "${modulesPath}/profiles/headless.nix"
     inputs.vscode-server.nixosModule
   ];
@@ -35,6 +35,13 @@
 
   programs.zsh.enable = true;
   programs.mosh.enable = true;
+
+  # Prometheus node exporter
+  services.prometheus.exporters.node = {
+    enable = true;
+    enabledCollectors = [ "systemd" ];
+    disabledCollectors = [ "timex" ];
+  };
 
   environment.systemPackages = with pkgs; [
     binutils

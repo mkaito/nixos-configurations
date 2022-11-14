@@ -15,6 +15,11 @@
     ./qemu.nix
     ./github-runner.nix
 
+    # Monitoring
+    ./prometheus.nix
+    ./alertmanager.nix
+    ./grafana.nix
+
     # Games
     # ./factorio.nix
     ./minecraft-servers.nix

@@ -1,4 +1,7 @@
 { pkgs, config, lib, ... }:
+let
+  domain = "mkaito.net";
+in
 {
   # Automatically make all vhosts use the pre-generated ACME cert
   imports = [ ./nginx-vhost-ssl.nix ];
@@ -14,6 +17,9 @@
       access_log syslog:server=unix:/dev/log,tag=nginx,severity=info combined;
     '';
 
+    # I hope they fixed this
+    recommendedProxySettings = true;
+
     # Serve my file sharing folder
     virtualHosts = {
       files = {
@@ -25,6 +31,27 @@
           # These files don't ever change once written
           extraConfig = "expires max;";
         };
+      };
+
+      grafana = {
+        serverName = "grafana.${domain}";
+        locations."/".proxyPass = "http://127.0.0.1:3000";
+        enableACME = true;
+        forceSSL = true;
+      };
+
+      prometheus = {
+        serverName = "prometheus.${domain}";
+        locations."/".proxyPass = "http://127.0.0.1:9090";
+        enableACME = true;
+        forceSSL = true;
+      };
+
+      alertmanager = {
+        serverName = "alertmanager.${domain}";
+        locations."/".proxyPass = "http://127.0.0.1:9093";
+        enableACME = true;
+        forceSSL = true;
       };
     };
   };

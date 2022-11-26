@@ -1,6 +1,8 @@
-{ lib, pkgs, ... }:
-
 {
+  lib,
+  pkgs,
+  ...
+}: {
   services.grafana = {
     enable = true;
     rootUrl = "https://grafana.mkaito.net";

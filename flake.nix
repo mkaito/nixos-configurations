@@ -10,7 +10,6 @@
     #   ref = "mkaito/backport-github-runner";
     # };
 
-
     flake-utils.url = "github:numtide/flake-utils";
 
     deploy-rs.url = "github:serokell/deploy-rs";
@@ -30,21 +29,27 @@
     vscode-server.url = "github:msteen/nixos-vscode-server";
   };
 
-  outputs = { self, nixpkgs, flake-utils, deploy-rs, ... }@inputs:
-  let
+  outputs = {
+    self,
+    nixpkgs,
+    flake-utils,
+    deploy-rs,
+    ...
+  } @ inputs: let
     inherit (nixpkgs.lib) foldl' recursiveUpdate nixosSystem mapAttrs;
 
     # We only evaluate server configs in the context of the system architecture they are deployed to
     system = "x86_64-linux";
-    mkSystem = module: nixosSystem {
-      specialArgs = {
-        inherit inputs system;
-        sshKeys = import ./lib/ssh/users.nix;
-      };
+    mkSystem = module:
+      nixosSystem {
+        specialArgs = {
+          inherit inputs system;
+          sshKeys = import ./lib/ssh/users.nix;
+        };
 
-      inherit system;
-      modules = [ module ./lib/ssh/hostkeys.nix ];
-    };
+        inherit system;
+        modules = [module ./lib/ssh/hostkeys.nix];
+      };
   in
     foldl' recursiveUpdate {} [
       {
@@ -57,7 +62,8 @@
             system = rec {
               sshUser = "root";
               user = sshUser;
-              path = deploy-rs.lib.${system}.activate.nixos
+              path =
+                deploy-rs.lib.${system}.activate.nixos
                 self.nixosConfigurations.stargazer;
             };
           };
@@ -72,56 +78,65 @@
           instances = server.services.modded-minecraft-servers.instances;
           enabledInstances = filterAttrs (_: i: i.enable) instances;
 
-          a_records = flip mapAttrs' enabledInstances
-            (n: v: nameValuePair "${n}_a" {
-              zone_id = ''''${data.aws_route53_zone.mkaito_net.zone_id}'';
-              name = ''${n}.mc.''${data.aws_route53_zone.mkaito_net.name}'';
-              type = "A";
-              ttl = "60";
-              records = [''''${data.dns_a_record_set.stargazer.addrs[0]}''];
-            });
-          aaaa_records = flip mapAttrs' enabledInstances
-            (n: v: nameValuePair "${n}_aaaa" {
-              zone_id = ''''${data.aws_route53_zone.mkaito_net.zone_id}'';
-              name = ''${n}.mc.''${data.aws_route53_zone.mkaito_net.name}'';
-              type = "AAAA";
-              ttl = "60";
-              records = [''''${data.dns_aaaa_record_set.stargazer.addrs[0]}''];
-            });
-          srv_records = flip mapAttrs' enabledInstances
-            (n: v: nameValuePair "${n}_srv" {
-              zone_id = ''''${data.aws_route53_zone.mkaito_net.zone_id}'';
-              name = ''_minecraft._tcp.${n}.mc.''${data.aws_route53_zone.mkaito_net.name}'';
-              type = "SRV";
-              ttl = "60";
-              records = [ ''0 5 ${toString v.serverConfig.server-port} ${n}.mc.''${data.aws_route53_zone.mkaito_net.name}'' ];
-            });
-        in writeText "minecraft.tf.json" (toJSON {
-          resource = {
-            aws_route53_record = a_records // aaaa_records // srv_records;
-          };
-        });
+          a_records =
+            flip mapAttrs' enabledInstances
+            (n: v:
+              nameValuePair "${n}_a" {
+                zone_id = ''''${data.aws_route53_zone.mkaito_net.zone_id}'';
+                name = ''${n}.mc.''${data.aws_route53_zone.mkaito_net.name}'';
+                type = "A";
+                ttl = "60";
+                records = [''''${data.dns_a_record_set.stargazer.addrs[0]}''];
+              });
+          aaaa_records =
+            flip mapAttrs' enabledInstances
+            (n: v:
+              nameValuePair "${n}_aaaa" {
+                zone_id = ''''${data.aws_route53_zone.mkaito_net.zone_id}'';
+                name = ''${n}.mc.''${data.aws_route53_zone.mkaito_net.name}'';
+                type = "AAAA";
+                ttl = "60";
+                records = [''''${data.dns_aaaa_record_set.stargazer.addrs[0]}''];
+              });
+          srv_records =
+            flip mapAttrs' enabledInstances
+            (n: v:
+              nameValuePair "${n}_srv" {
+                zone_id = ''''${data.aws_route53_zone.mkaito_net.zone_id}'';
+                name = ''_minecraft._tcp.${n}.mc.''${data.aws_route53_zone.mkaito_net.name}'';
+                type = "SRV";
+                ttl = "60";
+                records = [''0 5 ${toString v.serverConfig.server-port} ${n}.mc.''${data.aws_route53_zone.mkaito_net.name}''];
+              });
+        in
+          writeText "minecraft.tf.json" (toJSON {
+            resource = {
+              aws_route53_record = a_records // aaaa_records // srv_records;
+            };
+          });
 
         # Verify schema of .#deploy
         checks = mapAttrs (_: lib: lib.deployChecks self.deploy) deploy-rs.lib;
       }
 
-      (flake-utils.lib.eachDefaultSystem (system:
-        let
-          overlay = import ./pkgs inputs;
-          pkgs = nixpkgs.legacyPackages.${system}.extend overlay;
+      (flake-utils.lib.eachDefaultSystem (system: let
+        overlay = import ./pkgs inputs;
+        pkgs = nixpkgs.legacyPackages.${system}.extend overlay;
 
-          inherit (pkgs) mkShell;
-        in {
-          devShells.default = mkShell {
-            buildInputs = with pkgs; [
-              # NixOS deployment tool
-              deploy-rs.defaultPackage.${system}
+        inherit (pkgs) mkShell;
+      in {
+        devShells.default = mkShell {
+          buildInputs = with pkgs; [
+            # NixOS deployment tool
+            deploy-rs.defaultPackage.${system}
 
-              # Cloud resources
-              (terraform.withPlugins (p: with p; [ aws dns ]))
-            ];
-          };
-        }))
+            # Cloud resources
+            (terraform.withPlugins (p: with p; [aws dns]))
+
+            # Misc
+            alejandra
+          ];
+        };
+      }))
     ];
 }

@@ -1,13 +1,16 @@
-{ pkgs, config, lib, ... }:
-let
-  domain = "mkaito.net";
-in
 {
+  pkgs,
+  config,
+  lib,
+  ...
+}: let
+  domain = "mkaito.net";
+in {
   # Automatically make all vhosts use the pre-generated ACME cert
-  imports = [ ./nginx-vhost-ssl.nix ];
+  imports = [./nginx-vhost-ssl.nix];
 
   # Nginx module does not do this automatically
-  networking.firewall.allowedTCPPorts = [ 80 443 ];
+  networking.firewall.allowedTCPPorts = [80 443];
 
   services.nginx = {
     enable = true;
@@ -24,7 +27,7 @@ in
     virtualHosts = {
       files = {
         serverName = "files.stargazer.mkaito.net";
-        serverAliases = [ "files.mkaito.net" ];
+        serverAliases = ["files.mkaito.net"];
         locations."/" = {
           root = "/home/chris/public";
 
@@ -72,7 +75,7 @@ in
 
   # Delete any public files that are older than one year
   systemd.services.cleanup-public-shit = {
-    path = with pkgs; [ findutils ];
+    path = with pkgs; [findutils];
     script = ''
       find /home/chris/public -type f -mtime +365 -delete
     '';

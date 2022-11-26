@@ -107,3 +107,17 @@ resource "aws_route53_record" "alertmanager_cname" {
   ttl     = "60"
   records = ["stargazer.mkaito.net"]
 }
+
+# Odyssey delgated subdomain
+resource "aws_route53_record" "jf_delegate" {
+  zone_id = data.aws_route53_zone.mkaito_net.zone_id
+  name    = "jf.${data.aws_route53_zone.mkaito_net.name}"
+  type    = "NS"
+  ttl     = "60"
+  records = [
+    "ns-1182.awsdns-19.org",
+    "ns-1543.awsdns-00.co.uk",
+    "ns-507.awsdns-63.com",
+    "ns-917.awsdns-50.net",
+  ]
+}

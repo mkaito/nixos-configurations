@@ -1,4 +1,8 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  ...
+}:
 # let
 #   cert = config.security.acme.certs."mkaito.net";
 # in
@@ -7,22 +11,27 @@
     enable = true;
 
     settings = {
-      listeners = [{
-        bind_addresses = [ "0.0.0.0" ];
-        port = 13748;
+      listeners = [
+        {
+          bind_addresses = ["0.0.0.0"];
+          port = 13748;
 
-        resources = [
-          { compress = true;
-            names = [ "client" ]; }
-          { compress = false;
-            names = [ "federation" ]; }
-        ];
+          resources = [
+            {
+              compress = true;
+              names = ["client"];
+            }
+            {
+              compress = false;
+              names = ["federation"];
+            }
+          ];
 
-        type = "http";
-        tls = false;
-        x_forwarded = true;
-
-      }];
+          type = "http";
+          tls = false;
+          x_forwarded = true;
+        }
+      ];
 
       server_name = "mkaito.net";
       public_baseurl = "https://matrix.stargazer.mkaito.net";
@@ -36,9 +45,8 @@
       ];
     };
 
-
     # TURN shared secret & registration shared secret
-    extraConfigFiles = [ "/root/secrets/synapse-secrets.yaml" ];
+    extraConfigFiles = ["/root/secrets/synapse-secrets.yaml"];
   };
 
   # Yes, I know this is uhhhh less than great
@@ -51,26 +59,28 @@
 
   # Ensure psql access
   users.users.matrix-synapse.name = lib.mkForce "matrix-synapse";
-  services.postgresql.ensureDatabases = [ "matrix-synapse" ];
+  services.postgresql.ensureDatabases = ["matrix-synapse"];
 
   # Nginx for HTTPS termination
   services.nginx.virtualHosts.matrix = {
     default = true;
 
     serverName = "matrix.stargazer.mkaito.net";
-    serverAliases = [ "matrix.mkaito.net" "mkaito.net" ];
-    locations."/" = { proxyPass = "http://localhost:13748"; };
+    serverAliases = ["matrix.mkaito.net" "mkaito.net"];
+    locations."/" = {proxyPass = "http://localhost:13748";};
   };
 
   ## Coturn VoIP
-  networking.firewall.allowedTCPPorts = [ 3478 5349 ];
-  networking.firewall.allowedUDPPorts = [ 3478 5349 ];
+  networking.firewall.allowedTCPPorts = [3478 5349];
+  networking.firewall.allowedUDPPorts = [3478 5349];
 
   # That's a whole lotta UDP ports...
-  networking.firewall.allowedUDPPortRanges = [{
-    from = 49152;
-    to = 65535;
-  }];
+  networking.firewall.allowedUDPPortRanges = [
+    {
+      from = 49152;
+      to = 65535;
+    }
+  ];
 
   services.coturn = {
     enable = true;
@@ -90,7 +100,7 @@
     ];
   };
 
-  users.users.turnserver.extraGroups = [ "acme" ];
+  users.users.turnserver.extraGroups = ["acme"];
   security.acme.certs."mkaito.net".postRun = ''
     systemctl restart coturn
   '';

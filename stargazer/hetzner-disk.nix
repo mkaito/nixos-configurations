@@ -1,7 +1,6 @@
-{ config, ... }:
-{
-  boot.initrd.kernelModules = [ "dm-snapshot" "dm-raid" ];
-  boot.initrd.availableKernelModules = [ "nvme" ];
+{config, ...}: {
+  boot.initrd.kernelModules = ["dm-snapshot" "dm-raid"];
+  boot.initrd.availableKernelModules = ["nvme"];
 
   # The mdadm RAID1s were created with 'mdadm --create ... --homehost=hetzner',
   # but the hostname for each machine may be different, and mdadm's HOMEHOST

@@ -1,4 +1,11 @@
-{ pkgs, lib, inputs, system, modulesPath, ... }: {
+{
+  pkgs,
+  lib,
+  inputs,
+  system,
+  modulesPath,
+  ...
+}: {
   imports = [
     "${modulesPath}/profiles/headless.nix"
     inputs.vscode-server.nixosModule
@@ -39,8 +46,8 @@
   # Prometheus node exporter
   services.prometheus.exporters.node = {
     enable = true;
-    enabledCollectors = [ "systemd" ];
-    disabledCollectors = [ "timex" ];
+    enabledCollectors = ["systemd"];
+    disabledCollectors = ["timex"];
   };
 
   environment.systemPackages = with pkgs; [

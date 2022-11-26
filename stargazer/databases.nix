@@ -1,18 +1,21 @@
-{ pkgs, config, ... }:
 {
+  pkgs,
+  config,
+  ...
+}: {
   services.postgresql = {
     enable = true;
     package = pkgs.postgresql_12;
 
     # For each database in `ensureDatabases`, create a role with full access to
     # it.
-    ensureUsers =
-      map (db: {
-        name = db;
-        ensurePermissions = {
-          "DATABASE \"${db}\"" = "ALL";
-        };
-      }) config.services.postgresql.ensureDatabases;
+    ensureUsers = map (db: {
+      name = db;
+      ensurePermissions = {
+        "DATABASE \"${db}\"" = "ALL";
+      };
+    })
+    config.services.postgresql.ensureDatabases;
   };
 
   # Ensure that we have a folder to dump PG backups into
@@ -28,7 +31,7 @@
     ];
 
     # Need to write here to dump databases
-    readWritePaths = [ "/var/lib/backup" ];
+    readWritePaths = ["/var/lib/backup"];
 
     # Dump all databases to a file
     preHook = ''

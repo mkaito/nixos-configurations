@@ -1,5 +1,4 @@
-{ sshKeys, ... }:
-{
+{sshKeys, ...}: {
   services.gitolite = {
     enable = true;
     adminPubkey = builtins.head sshKeys.chris;
@@ -7,5 +6,5 @@
   };
 
   # Backup all git repos
-  services.borgbackup.jobs.backup.paths = [ "/var/lib/gitolite/repositories" ];
+  services.borgbackup.jobs.backup.paths = ["/var/lib/gitolite/repositories"];
 }

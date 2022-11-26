@@ -1,7 +1,6 @@
-{ inputs, ... }:
-{
-  imports = [ inputs.dust.module ];
-  services.postgresql.ensureDatabases = [ "dust" ];
+{inputs, ...}: {
+  imports = [inputs.dust.module];
+  services.postgresql.ensureDatabases = ["dust"];
   services.dust = {
     enable = true;
     environmentFile = "/root/secrets/dust.env";

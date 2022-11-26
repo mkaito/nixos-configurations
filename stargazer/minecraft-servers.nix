@@ -1,8 +1,13 @@
-{ pkgs, lib, inputs, sshKeys, ... }:
-let
+{
+  pkgs,
+  lib,
+  inputs,
+  sshKeys,
+  ...
+}: let
   inherit (lib) filterAttrs attrValues elem flatten concatStringsSep;
   rsyncSSHKeys =
-    flatten (attrValues (filterAttrs (n: _: elem n [ "chris" "camina" ]) sshKeys));
+    flatten (attrValues (filterAttrs (n: _: elem n ["chris" "camina"]) sshKeys));
 
   # "Borrowed" from AllTheMods Discord
   jvmOpts = concatStringsSep " " [
@@ -39,81 +44,121 @@ let
     # It just ain't modded minecraft without flying around
     allow-flight = true;
   };
-in
-{
-  imports = [ inputs.minecraft-servers.module ];
+in {
+  imports = [inputs.minecraft-servers.module];
   services.modded-minecraft-servers = {
     eula = true;
     instances = {
       e2es = {
-        inherit rsyncSSHKeys jvmOpts;
         enable = false;
+        inherit rsyncSSHKeys jvmOpts;
         jvmMaxAllocation = "8G";
         jvmInitialAllocation = "2G";
-        serverConfig = defaults // {
-          motd = "Enigmatica 2: Expert Skyblock";
-          extra-options.level-type = "voidworld";
-        };
+        serverConfig =
+          defaults
+          // {
+            motd = "Enigmatica 2: Expert Skyblock";
+            extra-options.level-type = "voidworld";
+          };
       };
+
       po3mythic = {
-        inherit rsyncSSHKeys jvmOpts;
         enable = false;
+        inherit rsyncSSHKeys jvmOpts;
         jvmMaxAllocation = "10G";
         jvmInitialAllocation = "4G";
-        serverConfig = defaults // {
-          server-port = 25571;
-          motd = "Project Ozone 3: Mythic Mode";
-          extra-options.level-type = "botania-skyblock";
-        };
+        serverConfig =
+          defaults
+          // {
+            server-port = 25571;
+            motd = "Project Ozone 3: Mythic Mode";
+            extra-options.level-type = "botania-skyblock";
+          };
       };
+
       omnifactory = {
-        inherit rsyncSSHKeys jvmOpts;
         enable = false;
+        inherit rsyncSSHKeys jvmOpts;
         jvmMaxAllocation = "6G";
         jvmInitialAllocation = "2G";
-        serverConfig = defaults // {
-          server-port = 25568;
-          motd = "Omnifactory dev snapshot #658";
-          # Factory good. Mobs bad.
-          difficulty = 0;
+        serverConfig =
+          defaults
+          // {
+            server-port = 25568;
+            motd = "Omnifactory dev snapshot #658";
+            # Factory good. Mobs bad.
+            difficulty = 0;
 
-          # default world, not lost cities
-          extra-options.defaultworldgenerator-port = "d644e624-8d6e-11ea-928f-448a5bef204e";
-        };
+            # default world, not lost cities
+            extra-options.defaultworldgenerator-port = "d644e624-8d6e-11ea-928f-448a5bef204e";
+          };
       };
+
       aryxe6 = {
-        inherit rsyncSSHKeys jvmOpts;
         enable = true;
-        jvmMaxAllocation = "18G";
-        jvmInitialAllocation = "6G";
-        serverConfig = defaults // {
-          server-port = 25573;
-          motd = "Aryx Enigmatica 6: Terraforged";
-          spawn-protection = 64;
-          level-seed = "-7983745119197482167";
-          level-type = "terraforged";
-          generator-settings = "Enigmatica";
+        inherit rsyncSSHKeys jvmOpts;
+        jvmMaxAllocation = "8G";
+        jvmInitialAllocation = "2G";
+        serverConfig =
+          defaults
+          // {
+            server-port = 25573;
+            motd = "Aryx Enigmatica 6: Terraforged";
+            spawn-protection = 64;
+            level-seed = "-7983745119197482167";
+            level-type = "terraforged";
+            generator-settings = "Enigmatica";
 
-          # Let the Discord bot handle it
-          # NB: Discord bot is broken
-          white-list = true;
-        };
+            # Let the Discord bot handle it
+            # NB: Discord bot is broken
+            white-list = true;
+          };
       };
+
       sb3 = {
+        enable = true;
         inherit rsyncSSHKeys;
-        jvmOpts = jvmOpts + " " + (concatStringsSep " " [
-          "-javaagent:log4jfix/Log4jPatcher-1.0.0.jar"
-          "@libraries/net/minecraftforge/forge/1.18.2-40.1.84/unix_args.txt"
-        ]);
+        jvmOpts =
+          jvmOpts
+          + " "
+          + (concatStringsSep " " [
+            "-javaagent:log4jfix/Log4jPatcher-1.0.0.jar"
+            "@libraries/net/minecraftforge/forge/1.18.2-40.1.84/unix_args.txt"
+          ]);
         # TODO: `jre` will inevitably refer to a different version at some point in the future
         jvmPackage = pkgs.jre;
+        jvmMaxAllocation = "6G";
+        jvmInitialAllocation = "2G";
+        serverConfig =
+          defaults
+          // {
+            server-port = 25574;
+            motd = "Stoneblock 3";
+          };
+      };
+
+      aryxsb3 = {
         enable = true;
-        jvmMaxAllocation = "12G";
-        jvmInitialAllocation = "6G";
-        serverConfig = defaults // {
-          server-port = 25574;
-          motd = "Stoneblock 3";
-        };
+        inherit rsyncSSHKeys;
+        jvmOpts =
+          jvmOpts
+          + " "
+          + (concatStringsSep " " [
+            "-javaagent:log4jfix/Log4jPatcher-1.0.0.jar"
+            "@libraries/net/minecraftforge/forge/1.18.2-40.1.84/unix_args.txt"
+          ]);
+        # TODO: `jre` will inevitably refer to a different version at some point in the future
+        jvmPackage = pkgs.jre;
+        jvmMaxAllocation = "8G";
+        jvmInitialAllocation = "2G";
+        serverConfig =
+          defaults
+          // {
+            server-port = 25575;
+            motd = "Aryx Stoneblock 3";
+            # Discord plugin should handle this
+            white-list = false;
+          };
       };
     };
   };

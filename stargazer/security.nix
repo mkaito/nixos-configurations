@@ -1,25 +1,25 @@
-{ config
-, pkgs
-, lib
-, sshKeys
-, ...}:
-with lib;
-let
+{
+  config,
+  pkgs,
+  lib,
+  sshKeys,
+  ...
+}:
+with lib; let
   expandUser = _name: keys: let
-    wheel = [ "chris" "faore" ];
-    libvirt = [ "chris" "faore" ];
+    wheel = ["chris" "faore"];
+    libvirt = ["chris" "faore"];
   in {
     extraGroups =
-      (lib.optionals (builtins.elem _name wheel) [ "wheel" ])
-      ++ (lib.optionals (builtins.elem _name libvirt) [ "libvirtd" ])
-      ++ [ "systemd-journal" ];
+      (lib.optionals (builtins.elem _name wheel) ["wheel"])
+      ++ (lib.optionals (builtins.elem _name libvirt) ["libvirtd"])
+      ++ ["systemd-journal"];
     isNormalUser = true;
     openssh.authorizedKeys.keys = keys;
   };
-
 in {
   # Defines the deploy user
-  imports = [ ./deploy.nix ];
+  imports = [./deploy.nix];
 
   services.openssh = {
     enable = true;
@@ -28,14 +28,15 @@ in {
   };
 
   security.sudo.wheelNeedsPassword = false;
-  nix.trustedUsers = [ "root" "@wheel" ];
+  nix.trustedUsers = ["root" "@wheel"];
 
   users.mutableUsers = false;
   users.users = lib.recursiveUpdate (lib.mapAttrs expandUser sshKeys) {
     root = {
       hashedPassword = "$6$lTBGqUqKYw$sBQXsEfL5FqwYbJlyejWRoagNUjoALM6VCtz7qI6veS.lIluw9cPx8NDmoinWFzS.g8WBuZCQZxs8NTmns/G4/";
-      openssh.authorizedKeys.keys = sshKeys.chris ++
-        [
+      openssh.authorizedKeys.keys =
+        sshKeys.chris
+        ++ [
           # Remote builds
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKQu6N8OM7hU105dnLpfeRJqpglaoD515pUhwDafFHpK root@cryptbreaker"
         ];
@@ -67,7 +68,7 @@ in {
       credentialsFile = "/root/secrets/lego.env";
 
       # Note: A wildcard only covers one level of subdomains
-      extraDomainNames = [ "*.mkaito.net" "*.stargazer.mkaito.net" ];
+      extraDomainNames = ["*.mkaito.net" "*.stargazer.mkaito.net"];
 
       # Tell nginx to reload the cert
       postRun = "systemctl reload nginx || true";

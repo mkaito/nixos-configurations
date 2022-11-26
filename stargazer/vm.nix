@@ -1,5 +1,4 @@
-{ lib, ... }:
-{
+{lib, ...}: {
   imports = [./server.nix];
 
   boot.loader.systemd-boot.enable = true;

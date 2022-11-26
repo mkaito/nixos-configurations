@@ -1,10 +1,9 @@
-{ sshKeys, ... }:
-{
+{sshKeys, ...}: {
   imports = [./../modules/services/factorio];
 
   services.factorio = {
     enable = false;
-    whitelist = [ "mkaito" "faore" ];
+    whitelist = ["mkaito" "faore"];
     rsync = true;
     rsyncKeys = builtins.concatLists (builtins.attrValues sshKeys);
     autoStart = true;

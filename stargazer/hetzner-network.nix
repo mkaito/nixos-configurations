@@ -1,40 +1,47 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   networking.useDHCP = false;
 
   networking.interfaces.enp35s0 = {
-
     ipv4 = {
       addresses = [
-        { # Server main IPv4 address
+        {
+          # Server main IPv4 address
           address = "135.181.74.221";
-          prefixLength = 24; }
+          prefixLength = 24;
+        }
       ];
 
       routes = [
-        { # Default IPv4 gateway route
+        {
+          # Default IPv4 gateway route
           address = "0.0.0.0";
           prefixLength = 0;
-          via = "135.181.74.193"; }
+          via = "135.181.74.193";
+        }
       ];
     };
 
     ipv6 = {
-      addresses = [{
-        address = "2a01:4f9:4b:12e2::2";
-        prefixLength = 64;
-      }];
+      addresses = [
+        {
+          address = "2a01:4f9:4b:12e2::2";
+          prefixLength = 64;
+        }
+      ];
 
       # Default IPv6 route
-      routes = [{
-        address = "::";
-        prefixLength = 0;
-        via = "fe80::1";
-      }];
+      routes = [
+        {
+          address = "::";
+          prefixLength = 0;
+          via = "fe80::1";
+        }
+      ];
     };
   };
 
   networking = {
-    nameservers = [ "1.0.0.1" "8.8.8.8" "8.8.4.4" ];
+    nameservers = ["1.0.0.1" "8.8.8.8" "8.8.4.4"];
     hostName = "stargazer";
     domain = "mkaito.net";
   };

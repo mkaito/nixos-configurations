@@ -1,10 +1,12 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
   cfg = config.services.factorio;
-  factorio =  pkgs.callPackage ./../../../pkgs/factorio/default.nix { releaseType = "headless"; };
+  factorio = pkgs.callPackage ./../../../pkgs/factorio/default.nix {releaseType = "headless";};
   name = "Factorio";
   stateDir = cfg.stateDir;
   mkSavePath = name: "${stateDir}/saves/${name}.zip";
@@ -14,30 +16,32 @@ let
     read-data=${factorio}/share/factorio/data
     write-data=${stateDir}
   '';
-  serverSettings = {
-    name = cfg.game-name;
-    description = cfg.description;
-    visibility = {
-      public = cfg.public;
-      lan = cfg.lan;
-    };
-    username = cfg.username;
-    password = cfg.password;
-    token = cfg.token;
-    game_password = cfg.game-password;
-    require_user_verification = cfg.requireUserVerification;
-    max_upload_in_kilobytes_per_second = 0;
-    minimum_latency_in_ticks = 0;
-    ignore_player_limit_for_returning_players = false;
-    allow_commands = "admins-only";
-    autosave_interval = cfg.autosave-interval;
-    autosave_slots = 5;
-    afk_autokick_interval = 0;
-    auto_pause = true;
-    only_admins_can_pause_the_game = true;
-    autosave_only_on_server = true;
-    admins = [];
-  } // cfg.extraSettings;
+  serverSettings =
+    {
+      name = cfg.game-name;
+      description = cfg.description;
+      visibility = {
+        public = cfg.public;
+        lan = cfg.lan;
+      };
+      username = cfg.username;
+      password = cfg.password;
+      token = cfg.token;
+      game_password = cfg.game-password;
+      require_user_verification = cfg.requireUserVerification;
+      max_upload_in_kilobytes_per_second = 0;
+      minimum_latency_in_ticks = 0;
+      ignore_player_limit_for_returning_players = false;
+      allow_commands = "admins-only";
+      autosave_interval = cfg.autosave-interval;
+      autosave_slots = 5;
+      afk_autokick_interval = 0;
+      auto_pause = true;
+      only_admins_can_pause_the_game = true;
+      autosave_only_on_server = true;
+      admins = [];
+    }
+    // cfg.extraSettings;
   serverSettingsFile = pkgs.writeText "server-settings.json" (builtins.toJSON (filterAttrsRecursive (n: v: v != null) serverSettings));
   whitelistFile = pkgs.writeText "server-whitelist.json" (builtins.toJSON cfg.whitelist);
   modDir = pkgs.factorio-utils.mkModDirDrv cfg.mods;
@@ -68,9 +72,8 @@ let
   #  * Needs to be one line, sorry.
   factorioRsyncCmd = ''command="rsync --config=${factorioRsyncdConf} --server --daemon .",no-agent-forwarding,no-port-forwarding,no-user-rc,no-X11-forwarding,no-pty'';
   modzip = "/tmp/mods.zip";
-in
-{
-  disabledModules = [ "services/games/factorio.nix" ];
+in {
+  disabledModules = ["services/games/factorio.nix"];
   options = {
     services.factorio = {
       enable = mkEnableOption name;
@@ -119,7 +122,7 @@ in
       extraSettings = mkOption {
         type = types.attrs;
         default = {};
-        example = { admins = [ "username" ];};
+        example = {admins = ["username"];};
         description = ''
           Extra game configuration that will go into server-settings.json
         '';
@@ -242,7 +245,8 @@ in
 
   config = mkIf cfg.enable {
     assertions = [
-      { assertion = !(cfg.rsync && cfg.rsyncKeys == []);
+      {
+        assertion = !(cfg.rsync && cfg.rsyncKeys == []);
         message = "Please define rsyncKeys if you use rsync for factorio.";
       }
       {
@@ -252,17 +256,19 @@ in
     ];
 
     users = {
-      users.nginx.extraGroups = [ "factorio" ];
-      users.factorio = {
-        uid             = 241;
-        description     = "Factorio server user";
-        group           = "factorio";
-        home            = stateDir;
-        createHome      = true;
-      } // (optionalAttrs cfg.rsync {
-        shell = pkgs.bash;
-        openssh.authorizedKeys.keys = map (x: factorioRsyncCmd + " " + x) cfg.rsyncKeys;
-      });
+      users.nginx.extraGroups = ["factorio"];
+      users.factorio =
+        {
+          uid = 241;
+          description = "Factorio server user";
+          group = "factorio";
+          home = stateDir;
+          createHome = true;
+        }
+        // (optionalAttrs cfg.rsync {
+          shell = pkgs.bash;
+          openssh.authorizedKeys.keys = map (x: factorioRsyncCmd + " " + x) cfg.rsyncKeys;
+        });
 
       groups.factorio = {
         gid = 241;
@@ -279,12 +285,11 @@ in
       };
     };
 
-
     systemd.services.factorio = {
-      description   = "Factorio headless server";
-      wantedBy      = mkIf cfg.autoStart [ "multi-user.target" ];
-      after         = [ "network.target" ];
-      path          = [ pkgs.zip ];
+      description = "Factorio headless server";
+      wantedBy = mkIf cfg.autoStart ["multi-user.target"];
+      after = ["network.target"];
+      path = [pkgs.zip];
 
       preStart = lib.concatStringsSep "\n" [
         (toString [
@@ -327,8 +332,14 @@ in
       };
     };
 
-    networking.firewall.allowedUDPPorts = [ cfg.port ];
-    networking.firewall.allowedTCPPorts = [ 80 ] ++ (if cfg.rsync then [ 873 ] else []);
+    networking.firewall.allowedUDPPorts = [cfg.port];
+    networking.firewall.allowedTCPPorts =
+      [80]
+      ++ (
+        if cfg.rsync
+        then [873]
+        else []
+      );
 
     system.activationScripts.factorio = ''
       mkdir -p ${stateDir}/{mods,saves}

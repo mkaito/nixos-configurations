@@ -202,11 +202,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1656185874,
-        "narHash": "sha256-sv7lsuARTT+LgMq0mFdFP73CHeqTeIvz2ZHzceQAK+0=",
+        "lastModified": 1669475336,
+        "narHash": "sha256-RQ6V9uu9juql8kIC3TW1b1MxCq7kAkSmhQPKlMn/+Kc=",
         "owner": "mkaito",
         "repo": "nixos-modded-minecraft-servers",
-        "rev": "74477f0041e76097a6800cda892744b4c4ab26d2",
+        "rev": "f0d29c4c86d75387a128529a037b85f70f522fa2",
         "type": "github"
       },
       "original": {
@@ -272,16 +272,16 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1606086654,
-        "narHash": "sha256-VFl+3eGIMqNp7cyOMJ6TjM/+UcsLKtodKoYexrlTJMI=",
+        "lastModified": 1669378442,
+        "narHash": "sha256-nm+4PN0A4SnV0SzEchxrMyKPvI3Ld/aoom4PnHeHucs=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "19db3e5ea2777daa874563b5986288151f502e27",
+        "rev": "0faaf0a9bb6dedb69bfd43ac06fb27fadc476c51",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-20.09",
+        "ref": "nixos-22.05",
         "repo": "nixpkgs",
         "type": "github"
       }

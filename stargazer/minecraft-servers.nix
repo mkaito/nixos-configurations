@@ -1,13 +1,13 @@
-{
-  pkgs,
-  lib,
-  inputs,
-  sshKeys,
-  ...
-}: let
+{ pkgs
+, lib
+, inputs
+, sshKeys
+, ...
+}:
+let
   inherit (lib) filterAttrs attrValues elem flatten concatStringsSep;
   rsyncSSHKeys =
-    flatten (attrValues (filterAttrs (n: _: elem n ["chris" "camina"]) sshKeys));
+    flatten (attrValues (filterAttrs (n: _: elem n [ "chris" "camina" ]) sshKeys));
 
   # "Borrowed" from AllTheMods Discord
   jvmOpts = concatStringsSep " " [
@@ -44,8 +44,9 @@
     # It just ain't modded minecraft without flying around
     allow-flight = true;
   };
-in {
-  imports = [inputs.minecraft-servers.module];
+in
+{
+  imports = [ inputs.minecraft-servers.module ];
   services.modded-minecraft-servers = {
     eula = true;
     instances = {
@@ -57,6 +58,8 @@ in {
         serverConfig =
           defaults
           // {
+            server-port = 25565;
+            rcon-port = 25566;
             motd = "Enigmatica 2: Expert Skyblock";
             extra-options.level-type = "voidworld";
           };
@@ -70,7 +73,8 @@ in {
         serverConfig =
           defaults
           // {
-            server-port = 25571;
+            server-port = 25567;
+            rcon-port = 25568;
             motd = "Project Ozone 3: Mythic Mode";
             extra-options.level-type = "botania-skyblock";
           };
@@ -84,7 +88,8 @@ in {
         serverConfig =
           defaults
           // {
-            server-port = 25568;
+            server-port = 25569;
+            rcon-port = 25570;
             motd = "Omnifactory dev snapshot #658";
             # Factory good. Mobs bad.
             difficulty = 0;
@@ -102,9 +107,12 @@ in {
         serverConfig =
           defaults
           // {
-            server-port = 25573;
+            server-port = 25571;
+            rcon-port = 25572;
+
             motd = "Aryx Enigmatica 6: Terraforged";
             spawn-protection = 64;
+
             level-seed = "-7983745119197482167";
             level-type = "terraforged";
             generator-settings = "Enigmatica";
@@ -132,7 +140,8 @@ in {
         serverConfig =
           defaults
           // {
-            server-port = 25574;
+            server-port = 25573;
+            rcon-port = 25574;
             motd = "Stoneblock 3";
           };
       };

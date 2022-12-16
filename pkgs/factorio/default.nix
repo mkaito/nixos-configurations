@@ -15,8 +15,10 @@
   releaseType,
   mods ? [],
   username ? "",
-  token ? "", # get/reset token at https://factorio.com/profile
-  experimental ? false, # true means to always use the latest branch
+  token ? "",
+  # get/reset token at https://factorio.com/profile
+  experimental ? false,
+  # true means to always use the latest branch
 }:
 assert releaseType
 == "alpha"
@@ -82,12 +84,12 @@ assert releaseType
       };
       headless = {
         stable = bdist {
-          sha256 = "sha256-JFV3yAlAclGuKSCAnuXQzEr+vb6yPHMKu46ZphLi8XY=";
-          version = "1.1.35";
+          sha256 = "sha256-m/rDXxO1H/8R8hvYbw0CBXDDEkuy/eTgqHmPqGq+HdM=";
+          version = "1.1.74";
         };
         experimental = bdist {
-          sha256 = "sha256-JFV3yAlAclGuKSCAnuXQzEr+vb6yPHMKu46ZphLi8XY=";
-          version = "1.1.35";
+          sha256 = "sha256-ylAVparIupV206helfSa4KTA+j5mdIV1n+b+0MSdbMk=";
+          version = "1.1.72";
         };
       };
       demo = {

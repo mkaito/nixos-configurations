@@ -2,13 +2,13 @@
   imports = [./../modules/services/factorio];
 
   services.factorio = {
-    enable = false;
+    enable = true;
     whitelist = ["mkaito" "faore"];
     rsync = true;
     rsyncKeys = builtins.concatLists (builtins.attrValues sshKeys);
     autoStart = true;
-    game-name = "Derptorio 1.1.21 Vanilla+ Server";
-    description = "1.1.21 Vanilla+ Trains & Chill";
+    game-name = "Derptorio 1.1.69 Vanilla Server";
+    description = "1.1.69 Vanilla Trains & Chill";
     extraSettings.admins = ["mkaito"];
   };
 

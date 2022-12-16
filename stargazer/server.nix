@@ -21,7 +21,7 @@
     ./grafana.nix
 
     # Games
-    # ./factorio.nix
+    ./factorio.nix
     ./minecraft-servers.nix
 
     # Hacks

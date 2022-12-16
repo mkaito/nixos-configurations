@@ -1,4 +1,9 @@
-FACTORIO_BASE="$HOME/.factorio"
+
+if [[ $OSTYPE =~ "darwin*" ]]; then
+  FACTORIO_BASE="$HOME/Library/Application Support/factorio"
+else
+  FACTORIO_BASE="$HOME/.factorio"
+fi
 
 function fac_upload_mods() {
   echo "Stopping service first..."
@@ -21,9 +26,7 @@ function fac_download_mods() {
 }
 
 function fac_latest_save() {
-  ## This actually seems the best way to get the most recent file in a folder.
-  # shellcheck disable=SC2012
-  echo -n "$HOME/.factorio/saves/$(ls -t ~/.factorio/saves | head -n1)"
+  echo -n "$(find "$FACTORIO_BASE/saves" -type f -exec stat --printf='%X\t%n\n' {} \; | sort -nr | cut -f 2- | head -n1)"
 }
 
 function fac_upload_save() {
@@ -33,7 +36,7 @@ function fac_upload_save() {
     sfile="$2"
   fi
 
-  if [[ -e $sfile ]]; then
+  if [[ -e "$sfile" ]]; then
     echo "Stopping service first..."
     fac_service "$1" stop
 
@@ -49,7 +52,7 @@ function fac_upload_save() {
     echo "Done. Please allow a few seconds for the service to boot."
 
   else
-    echo "Am I supposed to guess which save you want to upload?"
+    echo "File $sfile could not be found."
 
   fi
 }

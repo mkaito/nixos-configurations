@@ -13,5 +13,6 @@
   environment.systemPackages = with pkgs; [
     virt-manager
     cloud-utils
+    bridge-utils
   ];
 }

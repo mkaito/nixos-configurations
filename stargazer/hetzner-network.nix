@@ -24,8 +24,8 @@
     ipv6 = {
       addresses = [
         {
-          address = "2a01:4f9:4b:12e2::2";
-          prefixLength = 64;
+          address = "2a01:4f9:4b:12e2::1";
+          prefixLength = 128;
         }
       ];
 

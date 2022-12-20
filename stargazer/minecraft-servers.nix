@@ -1,13 +1,17 @@
-{ pkgs
-, lib
-, inputs
-, sshKeys
-, ...
-}:
-let
+{
+  pkgs,
+  lib,
+  inputs,
+  sshKeys,
+  ...
+}: let
   inherit (lib) filterAttrs attrValues elem flatten concatStringsSep;
   rsyncSSHKeys =
-    flatten (attrValues (filterAttrs (n: _: elem n [ "chris" "camina" ]) sshKeys));
+    flatten (attrValues (filterAttrs (n: _: elem n ["chris" "camina"]) sshKeys));
+
+  # Pin JRE versions used by instances
+  jre8 = pkgs.temurin-bin-8;
+  jre17 = pkgs.temurin-bin-17;
 
   # "Borrowed" from AllTheMods Discord
   jvmOpts = concatStringsSep " " [
@@ -44,9 +48,8 @@ let
     # It just ain't modded minecraft without flying around
     allow-flight = true;
   };
-in
-{
-  imports = [ inputs.minecraft-servers.module ];
+in {
+  imports = [inputs.minecraft-servers.module];
   services.modded-minecraft-servers = {
     eula = true;
     instances = {
@@ -55,6 +58,7 @@ in
         inherit rsyncSSHKeys jvmOpts;
         jvmMaxAllocation = "8G";
         jvmInitialAllocation = "2G";
+        jvmPackage = jre8;
         serverConfig =
           defaults
           // {
@@ -70,6 +74,7 @@ in
         inherit rsyncSSHKeys jvmOpts;
         jvmMaxAllocation = "10G";
         jvmInitialAllocation = "4G";
+        jvmPackage = jre8;
         serverConfig =
           defaults
           // {
@@ -85,6 +90,7 @@ in
         inherit rsyncSSHKeys jvmOpts;
         jvmMaxAllocation = "6G";
         jvmInitialAllocation = "2G";
+        jvmPackage = jre8;
         serverConfig =
           defaults
           // {
@@ -104,6 +110,7 @@ in
         inherit rsyncSSHKeys jvmOpts;
         jvmMaxAllocation = "8G";
         jvmInitialAllocation = "2G";
+        jvmPackage = jre8;
         serverConfig =
           defaults
           // {
@@ -133,8 +140,7 @@ in
             "-javaagent:log4jfix/Log4jPatcher-1.0.0.jar"
             "@libraries/net/minecraftforge/forge/1.18.2-40.1.84/unix_args.txt"
           ]);
-        # TODO: `jre` will inevitably refer to a different version at some point in the future
-        jvmPackage = pkgs.jre;
+        jvmPackage = jre17;
         jvmMaxAllocation = "6G";
         jvmInitialAllocation = "2G";
         serverConfig =
@@ -156,8 +162,7 @@ in
             "-javaagent:log4jfix/Log4jPatcher-1.0.0.jar"
             "@libraries/net/minecraftforge/forge/1.18.2-40.1.84/unix_args.txt"
           ]);
-        # TODO: `jre` will inevitably refer to a different version at some point in the future
-        jvmPackage = pkgs.jre;
+        jvmPackage = jre17;
         jvmMaxAllocation = "8G";
         jvmInitialAllocation = "2G";
         serverConfig =
